@@ -1,26 +1,34 @@
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import PopularDestinations from './components/PopularDestinations';
-import ProductShowcase from './components/ProductShowcase';
-import Features from './components/Features';
-import AdventureGrid from './components/AdventureGrid';
-import TemplatesAndCTA from './components/TemplatesAndCTA';
-import Footer from './components/Footer';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div className="app-container">
-      <Navbar />
-      <main>
-        <Hero />
-        <PopularDestinations />
-        <ProductShowcase />
-        <Features />
-        <AdventureGrid />
-        <TemplatesAndCTA />
-      </main>
-      <Footer />
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

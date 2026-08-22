@@ -1,0 +1,84 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--color-cream);
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8rem 2rem 4rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 3rem;
+  color: var(--color-terracotta);
+}
+
+.logoutBtn {
+  background: white;
+  color: var(--color-espresso);
+  border: 1px solid #e0e0e0;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.welcomeCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(58, 42, 30, 0.05);
+}
+
+.welcomeCard h2 {
+  font-size: 1.5rem;
+  color: var(--color-espresso);
+  margin-bottom: 0.5rem;
+}
+
+.welcomeCard p {
+  color: #666;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(58, 42, 30, 0.05);
+}
+
+.card h3 {
+  font-size: 1.25rem;
+  color: var(--color-espresso);
+  margin-bottom: 1rem;
+}
+
+.card p {
+  color: #666;
+}
