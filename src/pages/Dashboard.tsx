@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Compass, LayoutDashboard, Briefcase, MapPin, Wallet, Activity, BookOpen, 
-  Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check, User
-  Compass, MapPin, Wallet, Activity, BookOpen, 
+  Compass, Briefcase, MapPin, Wallet, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
   Sparkles, Check, FileText, Shield, FileCheck, ChevronRight,
   Ticket, Download, Trash2, Upload, X
@@ -16,8 +13,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import styles from './Dashboard.module.css';
 
-type TabType = 'dashboard' | 'my-trips' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings' | 'profile';
-type TabType = 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
+type TabType = 'dashboard' | 'my-trips' | 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings' | 'profile';
 
 interface Expense {
   id: string;
@@ -270,6 +266,8 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('notes');
+  const [selectedDay, setSelectedDay] = useState<number | null>(1);
+  const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState(2);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
@@ -514,20 +512,18 @@ export default function Dashboard() {
 
           <nav className={styles.sidebarNav}>
             <button 
-              className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <LayoutDashboard size={19} />
-              <span>Dashboard</span>
-            </button>
-            <button 
               className={`${styles.navItem} ${activeTab === 'my-trips' ? styles.active : ''}`}
               onClick={() => setActiveTab('my-trips')}
-              className={`${styles.navItem} ${activeTab === 'map' ? styles.active : ''}`}
-              onClick={() => setActiveTab('map')}
             >
               <Briefcase size={19} />
               <span>My Trips</span>
+            </button>
+            <button 
+              className={`${styles.navItem} ${activeTab === 'map' ? styles.active : ''}`}
+              onClick={() => setActiveTab('map')}
+            >
+              <MapPin size={19} />
+              <span>Map</span>
             </button>
             <button 
               className={`${styles.navItem} ${activeTab === 'budget' ? styles.active : ''}`}
@@ -592,40 +588,17 @@ export default function Dashboard() {
         {activeTab !== 'my-trips' && activeTab !== 'profile' && (
           <header className={styles.topHeader}>
             <div className={styles.tripHeader}>
-              <h1 className={styles.tripTitle}>{currentTrip ? currentTrip.title : 'My Workspace'}</h1>
-              <p className={styles.tripSubtitle}>{currentTrip ? `${currentTrip.dateRange} • ${currentTrip.location}` : 'Select a trip from My Trips to get started'}</p>
+              <h1 className={styles.tripTitle}>
+                {activeTab === 'documents' 
+                  ? 'Travel Documents' 
+                  : (currentTrip ? currentTrip.title : 'My Workspace')}
+              </h1>
+              <p className={styles.tripSubtitle}>
+                {activeTab === 'documents'
+                  ? 'Store, manage, and access boarding passes, hotel reservations, and activity tickets.'
+                  : (currentTrip ? `${currentTrip.dateRange} • ${currentTrip.location}` : 'Select a trip from My Trips to get started')}
+              </p>
             </div>
-        <header className={styles.topHeader}>
-          <div className={styles.tripHeader}>
-            <h1 className={styles.tripTitle}>
-              {activeTab === 'documents' 
-                ? 'Travel Documents' 
-                : 'Italy Adventure'}
-            </h1>
-            <p className={styles.tripSubtitle}>
-              {activeTab === 'documents'
-                ? 'Store, manage, and access boarding passes, hotel reservations, and activity tickets.'
-                : 'May 20 - June 2 • 14 Days • 4 Cities'}
-            </p>
-          </div>
-
-          <div className={styles.headerControls}>
-            <button 
-              className={styles.iconBtn}
-              onClick={() => {
-                setShowNotificationToast(!showNotificationToast);
-                setNotificationCount(0);
-              }}
-              title="Notifications"
-            >
-              <Bell size={20} />
-              {notificationCount > 0 && <span className={styles.badge}>{notificationCount}</span>}
-            </button>
-
-            <button className={styles.actionBtnSecondary} onClick={() => alert('Trip link copied to clipboard!')}>
-              <Share2 size={16} />
-              <span>Share</span>
-            </button>
 
             <div className={styles.headerControls}>
               <button 
@@ -818,8 +791,6 @@ export default function Dashboard() {
 
         {/* My Trips Tab View */}
         {activeTab === 'my-trips' && (
-        {/* Map Tab View */}
-        {activeTab === 'map' && (
           <div className={styles.fullscreenView}>
             <MyTripsTab onOpenTrip={(trip) => {
               setCurrentTrip(trip);
