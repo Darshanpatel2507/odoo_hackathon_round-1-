@@ -615,6 +615,183 @@
   border: 1px solid #EBE0D2;
 }
 
+/* NEW BUDGET SECTION STYLES */
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.toursList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tourBox {
+  background-color: #FAF4EC;
+  border: 1px solid #EBE0D2;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.tourHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #EBE0D2;
+  padding-bottom: 12px;
+}
+
+.tourHeader h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #231712;
+  margin: 0;
+}
+
+.tourSummary {
+  display: flex;
+  gap: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.destinationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.destinationBox {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(58, 42, 30, 0.08);
+}
+
+.destinationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.destinationHeader h4 {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  color: #3A2A1E;
+  margin: 0;
+}
+
+.destSummary {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6B5D50;
+}
+
+.expenseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.expenseItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: #F8F5F1;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.expenseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.expenseDesc {
+  font-weight: 600;
+  color: #231712;
+  font-size: 0.95rem;
+}
+
+.expenseCat {
+  font-size: 0.75rem;
+  color: #7E6F64;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.expenseAmt {
+  font-weight: 700;
+  color: #231712;
+}
+
+.addExpenseBtn {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px dashed var(--color-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.addExpenseBtn:hover {
+  background-color: rgba(193, 80, 46, 0.08);
+}
+
+.addExpenseForm {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #F8F5F1;
+  padding: 12px;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.expenseInput {
+  padding: 8px 12px;
+  border: 1px solid #D4C5B9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  flex: 1;
+  min-width: 120px;
+}
+
+.saveExpenseBtn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelExpenseBtn {
+  background-color: #EFE7DD;
+  color: #3A2A1E;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
 .companionHeader {
   display: flex;
   align-items: center;
