@@ -55,10 +55,17 @@
 }
 
 .subheadline {
-  color: var(--color-highlight);
-  font-size: clamp(2rem, 4vw, 3rem);
+  color: #FFF3E0;
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-weight: 700;
   margin-bottom: 48px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  text-shadow: 
+    0 2px 6px rgba(35, 18, 10, 0.95), 
+    0 4px 18px rgba(0, 0, 0, 0.75), 
+    0 0 30px rgba(232, 163, 61, 0.5);
+  position: relative;
+  display: inline-block;
 }
 
 .searchCard {

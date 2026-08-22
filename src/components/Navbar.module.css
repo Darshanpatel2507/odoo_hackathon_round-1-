@@ -4,18 +4,18 @@
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 20px 0;
+  padding: 16px 0;
   transition: padding var(--transition-fast), background-color var(--transition-fast), backdrop-filter var(--transition-fast), box-shadow var(--transition-fast);
-  background-color: rgba(253, 248, 240, 0.15); /* More subtle cream opacity */
-  backdrop-filter: blur(6px); /* Less blur */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* Softer border */
+  background-color: rgba(253, 248, 240, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(58, 42, 30, 0.1);
+  box-shadow: 0 4px 20px rgba(58, 42, 30, 0.06);
 }
 
 .scrolled {
   padding: 12px 0;
-  background-color: rgba(253, 248, 240, 0.9); /* Cream with opacity */
-  backdrop-filter: blur(8px);
-  box-shadow: var(--shadow-sm);
+  background-color: rgba(253, 248, 240, 0.98);
+  box-shadow: 0 4px 25px rgba(58, 42, 30, 0.1);
 }
 
 .container {
@@ -30,19 +30,21 @@
 .logoContainer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--color-primary);
+  gap: 10px;
+  text-decoration: none;
 }
 
 .logoIcon {
   color: var(--color-primary);
+  filter: drop-shadow(0 2px 4px rgba(193, 80, 46, 0.25));
 }
 
 .logoText {
   font-family: var(--font-serif);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1E120B;
+  letter-spacing: -0.5px;
 }
 
 .linksContainer {
@@ -52,9 +54,11 @@
 }
 
 .navLink {
-  color: var(--color-text);
-  font-weight: 500;
-  font-size: 1rem;
+  color: #2D1A10;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  position: relative;
   transition: color var(--transition-fast);
 }
 
@@ -62,37 +66,95 @@
   color: var(--color-primary);
 }
 
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width var(--transition-fast);
+  border-radius: 2px;
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
 .actionsContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+}
+
+.dashboardHighlightBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #C1502E 0%, #D96538 100%);
+  color: #FFFFFF !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(193, 80, 46, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.dashboardHighlightBtn:hover {
+  background: linear-gradient(135deg, #D96538 0%, #E87A4F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(193, 80, 46, 0.45);
+}
+
+.dashboardHighlightBtn svg {
+  color: #FFFFFF;
 }
 
 .loginBtn {
   background: transparent;
-  color: var(--color-text);
+  color: #2D1A10;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   padding: 8px 16px;
-  transition: color var(--transition-fast);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(58, 42, 30, 0.15);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .loginBtn:hover {
+  background-color: rgba(58, 42, 30, 0.05);
   color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .signupBtn {
-  background-color: var(--color-primary);
+  background-color: #2D1A10;
   color: var(--color-white);
-  padding: 12px 24px;
+  padding: 10px 22px;
   border-radius: var(--radius-full);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
 }
 
 .signupBtn:hover {
-  background-color: var(--color-accent);
-  transform: scale(1.02);
-  box-shadow: var(--shadow-md);
+  background-color: #1E120B;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 26, 16, 0.25);
 }
+
+@media (max-width: 768px) {
+  .linksContainer {
+    display: none;
+  }
+}
+
