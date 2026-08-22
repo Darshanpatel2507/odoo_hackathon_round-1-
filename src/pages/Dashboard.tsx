@@ -12,6 +12,26 @@ import styles from './Dashboard.module.css';
 
 type TabType = 'dashboard' | 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
 
+interface Expense {
+  id: string;
+  description: string;
+  amount: number;
+  category: string;
+}
+
+interface Destination {
+  id: string;
+  name: string;
+  budgetLimit: number;
+  expenses: Expense[];
+}
+
+interface Tour {
+  id: string;
+  title: string;
+  destinations: Destination[];
+}
+
 interface DayPlan {
   id: number;
   dayBadge: string;
@@ -242,6 +262,91 @@ export default function Dashboard() {
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [completedActivities, setCompletedActivities] = useState<string[]>(['Colosseum Tour']);
 
+  const [tours, setTours] = useState<Tour[]>([
+    {
+      id: 't1',
+      title: 'Italy Adventure',
+      destinations: [
+        {
+          id: 'd1',
+          name: 'Rome',
+          budgetLimit: 1500,
+          expenses: [
+            { id: 'e1', description: 'Colosseum Tickets', amount: 50, category: 'Activities' },
+            { id: 'e2', description: 'Dinner at Trastevere', amount: 80, category: 'Food' }
+          ]
+        },
+        {
+          id: 'd2',
+          name: 'Florence',
+          budgetLimit: 1200,
+          expenses: [
+            { id: 'e3', description: 'Train to Florence', amount: 45, category: 'Transport' },
+            { id: 'e4', description: 'Uffizi Gallery', amount: 35, category: 'Activities' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 't2',
+      title: 'France Getaway',
+      destinations: [
+        {
+          id: 'd3',
+          name: 'Paris',
+          budgetLimit: 2000,
+          expenses: [
+            { id: 'e5', description: 'Eiffel Tower', amount: 30, category: 'Activities' },
+            { id: 'e6', description: 'Hotel Stay', amount: 500, category: 'Stays' }
+          ]
+        }
+      ]
+    }
+  ]);
+
+  const [expenseForm, setExpenseForm] = useState<{
+    tourId: string;
+    destinationId: string;
+    description: string;
+    amount: string;
+    category: string;
+  } | null>(null);
+
+  const handleAddExpenseSubmit = () => {
+    if (!expenseForm || !expenseForm.description || !expenseForm.amount) return;
+    
+    setTours(prevTours => prevTours.map(tour => {
+      if (tour.id === expenseForm.tourId) {
+        return {
+          ...tour,
+          destinations: tour.destinations.map(dest => {
+            if (dest.id === expenseForm.destinationId) {
+              return {
+                ...dest,
+                expenses: [...dest.expenses, {
+                  id: Date.now().toString(),
+                  description: expenseForm.description,
+                  amount: parseFloat(expenseForm.amount),
+                  category: expenseForm.category || 'Other'
+                }]
+              };
+            }
+            return dest;
+          })
+        };
+      }
+      return tour;
+    }));
+    
+    setExpenseForm(null);
+  };
+
+  const handleSaveBudget = () => {
+    const confirmSave = window.confirm("Are you sure you want to save this budget? Please review all the details before confirming.");
+    if (confirmSave) {
+      alert("Budget successfully saved!");
+    }
+  };
   // Document Section States
   const [adventureFolders, setAdventureFolders] = useState<AdventureFolder[]>(initialAdventureFolders);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -641,22 +746,99 @@ export default function Dashboard() {
         {/* Budget Tab View */}
         {activeTab === 'budget' && (
           <div className={styles.fullscreenView}>
-            <div className={styles.budgetTrackerView}>
+            <div className={styles.budgetHeader}>
               <h2 className={styles.viewHeading}>Detailed Trip Budget & Expenses</h2>
-              <div className={styles.budgetMetrics}>
-                <div className={styles.metricCard}>
-                  <span>Total Budget</span>
-                  <h3>₹4,200</h3>
-                </div>
-                <div className={styles.metricCard}>
-                  <span>Total Spent</span>
-                  <h3 className={styles.spentColor}>₹3,024 (72%)</h3>
-                </div>
-                <div className={styles.metricCard}>
-                  <span>Remaining</span>
-                  <h3 className={styles.remainingColor}>₹1,176</h3>
-                </div>
-              </div>
+              <button className={styles.actionBtnPrimary} onClick={handleSaveBudget}>Save Budget</button>
+            </div>
+            
+            <div className={styles.toursList}>
+              {tours.map(tour => {
+                const tourTotalBudget = tour.destinations.reduce((acc, d) => acc + d.budgetLimit, 0);
+                const tourTotalSpent = tour.destinations.reduce((acc, d) => 
+                  acc + d.expenses.reduce((eAcc, e) => eAcc + e.amount, 0)
+                , 0);
+
+                return (
+                  <div key={tour.id} className={styles.tourBox}>
+                    <div className={styles.tourHeader}>
+                      <h3>{tour.title}</h3>
+                      <div className={styles.tourSummary}>
+                        <span>Limit: ₹{tourTotalBudget}</span>
+                        <span className={styles.spentColor}>Spent: ₹{tourTotalSpent}</span>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.destinationsList}>
+                      {tour.destinations.map(dest => {
+                        const destSpent = dest.expenses.reduce((acc, e) => acc + e.amount, 0);
+                        
+                        return (
+                          <div key={dest.id} className={styles.destinationBox}>
+                            <div className={styles.destinationHeader}>
+                              <h4>{dest.name}</h4>
+                              <div className={styles.destSummary}>
+                                <span>Limit: ₹{dest.budgetLimit}</span>
+                                <span className={styles.spentColor}>Spent: ₹{destSpent}</span>
+                              </div>
+                            </div>
+                            
+                            <div className={styles.expenseList}>
+                              {dest.expenses.map(exp => (
+                                <div key={exp.id} className={styles.expenseItem}>
+                                  <div className={styles.expenseInfo}>
+                                    <span className={styles.expenseDesc}>{exp.description}</span>
+                                    <span className={styles.expenseCat}>{exp.category}</span>
+                                  </div>
+                                  <span className={styles.expenseAmt}>₹{exp.amount}</span>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {expenseForm?.destinationId === dest.id ? (
+                              <div className={styles.addExpenseForm}>
+                                <input 
+                                  type="text" 
+                                  placeholder="Expense description" 
+                                  value={expenseForm.description}
+                                  onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
+                                  className={styles.expenseInput}
+                                />
+                                <input 
+                                  type="number" 
+                                  placeholder="Amount" 
+                                  value={expenseForm.amount}
+                                  onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
+                                  className={styles.expenseInput}
+                                />
+                                <select 
+                                  value={expenseForm.category}
+                                  onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
+                                  className={styles.expenseInput}
+                                >
+                                  <option value="Transport">Transport</option>
+                                  <option value="Activities">Activities</option>
+                                  <option value="Food">Food</option>
+                                  <option value="Stays">Stays</option>
+                                  <option value="Other">Other</option>
+                                </select>
+                                <button className={styles.saveExpenseBtn} onClick={handleAddExpenseSubmit}>Add</button>
+                                <button className={styles.cancelExpenseBtn} onClick={() => setExpenseForm(null)}>Cancel</button>
+                              </div>
+                            ) : (
+                              <button 
+                                className={styles.addExpenseBtn} 
+                                onClick={() => setExpenseForm({ tourId: tour.id, destinationId: dest.id, description: '', amount: '', category: 'Food' })}
+                              >
+                                + Add Expense
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
