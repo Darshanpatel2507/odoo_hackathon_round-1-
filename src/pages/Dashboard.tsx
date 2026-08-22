@@ -5,7 +5,7 @@ import {
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
   Sparkles, Check
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Dashboard.module.css';
 
@@ -94,12 +94,18 @@ const aiSuggestionsList = [
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [selectedDay, setSelectedDay] = useState<number | null>(1);
   const [showAiModal, setShowAiModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState(2);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [completedActivities, setCompletedActivities] = useState<string[]>(['Colosseum Tour']);
+
+  const handleLogout = async () => {
+    navigate('/');
+    await signOut();
+  };
 
   const toggleActivity = (act: string) => {
     if (completedActivities.includes(act)) {
@@ -187,7 +193,7 @@ export default function Dashboard() {
               <ArrowLeft size={16} />
               <span>Home</span>
             </Link>
-            <button onClick={signOut} className={styles.logoutBtn} title="Sign Out">
+            <button onClick={handleLogout} className={styles.logoutBtn} title="Sign Out">
               <LogOut size={16} />
             </button>
           </div>
