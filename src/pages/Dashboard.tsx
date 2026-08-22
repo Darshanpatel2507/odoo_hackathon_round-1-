@@ -146,7 +146,7 @@ const aiSuggestionsList = [
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('notes');
+  const [activeTab, setActiveTab] = useState<TabType>('my-trips');
   const [selectedDay, setSelectedDay] = useState<number | null>(1);
   const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
@@ -274,6 +274,7 @@ export default function Dashboard() {
 
   const [showBudgetModal, setShowBudgetModal] = useState(false);
   const [selectedBudgetTrip, setSelectedBudgetTrip] = useState<any>(null);
+  const [editBudgetAmount, setEditBudgetAmount] = useState<number>(0);
 
   const [expenseForm, setExpenseForm] = useState<{
     tripId: string;
@@ -281,6 +282,18 @@ export default function Dashboard() {
     amount: number;
     category: string;
   }>({ tripId: '', description: '', amount: 0, category: 'Food' });
+
+  const handleUpdateBudget = async () => {
+    if (!selectedBudgetTrip) return;
+    const { error } = await supabase.from('trips').update({ budget_limit: editBudgetAmount } as any).eq('id', selectedBudgetTrip.id);
+    if (!error) {
+       setTours(tours.map(t => t.id === selectedBudgetTrip.id ? {...t, budgetLimit: editBudgetAmount} : t));
+       setSelectedBudgetTrip({...selectedBudgetTrip, budgetLimit: editBudgetAmount});
+       alert("Budget updated successfully!");
+    } else {
+       alert("Failed to update budget.");
+    }
+  };
 
   const handleAddExpenseSubmit = async () => {
     if (!expenseForm.tripId || !expenseForm.description || !expenseForm.amount) return;
@@ -314,6 +327,8 @@ export default function Dashboard() {
   const [newDocCategory, setNewDocCategory] = useState<DocumentItem['category']>('Transit');
   const [newDocType, setNewDocType] = useState<DocumentItem['fileType']>('PDF');
   const [newDocNotes, setNewDocNotes] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleLogout = async () => {
@@ -337,28 +352,64 @@ export default function Dashboard() {
     if (!newDocTitle.trim() || !selectedFolderId) return;
 
     const uploadDoc = async () => {
+      if (!selectedFile) {
+        alert("Please select a file to upload.");
+        return;
+      }
+      
+      setIsUploading(true);
+      
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `${user?.id}/${selectedFolderId}/${fileName}`;
+      
+      // Upload to Storage
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(filePath, selectedFile);
+        
+      if (uploadError) {
+        alert("Error uploading file to storage!");
+        setIsUploading(false);
+        return;
+      }
+      
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('documents')
+        .getPublicUrl(filePath);
+
+      const fileUrl = publicUrlData.publicUrl;
+
       const { data, error } = await supabase.from('documents').insert([
         {
           user_id: user?.id || '',
           trip_id: selectedFolderId,
-          file_name: newDocTitle.trim(),
-          file_url: 'placeholder_url',
+          file_name: selectedFile.name,
+          file_url: fileUrl,
           category: newDocCategory,
-          notes: newDocNotes.trim()
+          notes: newDocNotes.trim(),
+          file_size: `${(selectedFile.size / (1024 * 1024)).toFixed(2)} MB`,
+          file_type: newDocType
         } as any
       ]).select();
+      
+      setIsUploading(false);
       
       if (!error && data) {
         const docData = data[0] as any;
         const newDoc: DocumentItem = {
           id: docData.id,
+          trip_id: selectedFolderId,
           name: docData.file_name || docData.name,
-          category: (docData.category as any) || 'Transit',
-          fileType: newDocType,
-          fileSize: `1.5 MB`,
+          category: (docData.category as any) || 'Other',
+          fileType: docData.file_type || newDocType,
+          fileSize: docData.file_size || '0 MB',
           uploadedAt: new Date(docData.created_at || new Date()).toLocaleDateString(),
           notes: docData.notes || undefined
-        };setAdventureFolders(prev => prev.map(folder => {
+        };
+        
+        setAdventureFolders(prev => prev.map(folder => {
           if (folder.id === selectedFolderId) {
             return {
               ...folder,
@@ -372,11 +423,12 @@ export default function Dashboard() {
         setNewDocCategory('Transit');
         setNewDocType('PDF');
         setNewDocNotes('');
+        setSelectedFile(null);
         setShowAddDocModal(false);
         setToastMessage(`Added document!`);
         setTimeout(() => setToastMessage(null), 3500);
       } else {
-        alert("Error saving document!");
+        alert("Error saving document to database!");
       }
     };
     uploadDoc();
@@ -705,6 +757,7 @@ export default function Dashboard() {
                     onClick={() => {
                       setSelectedBudgetTrip(tour);
                       setExpenseForm({ ...expenseForm, tripId: tour.id });
+                      setEditBudgetAmount(tour.budgetLimit || 0);
                       setShowBudgetModal(true);
                     }}
                   >
@@ -767,6 +820,13 @@ export default function Dashboard() {
                       )}
                     </div>
 
+                    <div className={styles.addExpenseSection} style={{marginBottom: '20px'}}>
+                      <h4>Edit Budget Limit</h4>
+                      <div className={styles.expenseFormGrid}>
+                        <input type="number" value={editBudgetAmount || ''} onChange={e => setEditBudgetAmount(Number(e.target.value))} className={styles.formInput} placeholder="New Budget Limit" />
+                        <button className={styles.actionBtnPrimary} onClick={handleUpdateBudget}>Update Budget</button>
+                      </div>
+                    </div>
                     <div className={styles.addExpenseSection}>
                       <h4>Add New Expense</h4>
                       <div className={styles.expenseFormGrid}>
@@ -952,6 +1012,12 @@ export default function Dashboard() {
                     <span>3 Secure Vaults</span>
                   </div>
                 </div>
+                <div style={{ padding: '0 32px', marginBottom: '20px' }}>
+                  <button className={styles.addDocPrimaryBtn} onClick={() => { setSelectedFolderId(null); setShowAddDocModal(true); }}>
+                    <Plus size={16} />
+                    <span>Add Document</span>
+                  </button>
+                </div>
 
                 <div className={styles.adventureGridBlocks}>
                   {adventureFolders.map((folder) => (
@@ -1125,7 +1191,7 @@ export default function Dashboard() {
 
       {/* Add Document Form Modal */}
       <AnimatePresence>
-        {showAddDocModal && activeAdventureFolder && (
+        {showAddDocModal && (
           <div className={styles.modalOverlay} onClick={() => setShowAddDocModal(false)}>
             <motion.div 
               className={styles.modalContent}
@@ -1137,7 +1203,7 @@ export default function Dashboard() {
               <div className={styles.modalHeader}>
                 <div className={styles.modalTitle}>
                   <Upload size={22} color="var(--color-primary)" />
-                  <h3>Add Document to {activeAdventureFolder.title}</h3>
+                  <h3>Add Document {activeAdventureFolder ? `to ${activeAdventureFolder.title}` : ''}</h3>
                 </div>
                 <button className={styles.closeBtn} onClick={() => setShowAddDocModal(false)}>
                   <X size={20} />
@@ -1145,6 +1211,20 @@ export default function Dashboard() {
               </div>
 
               <form onSubmit={handleAddDocument} className={styles.addDocForm}>
+                {!activeAdventureFolder && (
+                  <div className={styles.formGroup}>
+                    <label>Select Trip *</label>
+                    <select 
+                      value={selectedFolderId || ''}
+                      onChange={e => setSelectedFolderId(e.target.value)}
+                      required
+                      className={styles.formInput}
+                    >
+                      <option value="" disabled>Select a trip</option>
+                      {adventureFolders.map(f => <option key={f.id} value={f.id}>{f.title}</option>)}
+                    </select>
+                  </div>
+                )}
                 <div className={styles.formGroup}>
                   <label htmlFor="docTitle">Document Name / Description *</label>
                   <input 
@@ -1191,9 +1271,29 @@ export default function Dashboard() {
                 <div className={styles.formGroup}>
                   <label>Upload File</label>
                   <div className={styles.uploadDropZone}>
-                    <Upload size={28} className={styles.uploadIcon} />
-                    <p><strong>Click to browse</strong> or drag & drop travel document</p>
-                    <span>Supports PDF, PNG, JPG up to 25MB</span>
+                    <input 
+                      type="file" 
+                      id="fileUpload" 
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setSelectedFile(e.target.files[0]);
+                          if (!newDocTitle) setNewDocTitle(e.target.files[0].name);
+                        }
+                      }}
+                      style={{ display: 'none' }} 
+                      accept=".pdf,.png,.jpg,.jpeg"
+                    />
+                    <label htmlFor="fileUpload" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <Upload size={28} className={styles.uploadIcon} />
+                      <p>
+                        {selectedFile ? (
+                          <strong>{selectedFile.name}</strong>
+                        ) : (
+                          <><strong>Click to browse</strong> or drag & drop travel document</>
+                        )}
+                      </p>
+                      <span>Supports PDF, PNG, JPG up to 25MB</span>
+                    </label>
                   </div>
                 </div>
 
@@ -1219,9 +1319,10 @@ export default function Dashboard() {
                   <button 
                     type="submit" 
                     className={styles.submitDocBtn}
+                    disabled={isUploading}
                   >
                     <Plus size={16} />
-                    <span>Upload Document</span>
+                    <span>{isUploading ? 'Uploading...' : 'Upload Document'}</span>
                   </button>
                 </div>
               </form>
@@ -1299,13 +1400,17 @@ export default function Dashboard() {
               <form onSubmit={handleSaveNote} className={styles.addNoteForm}>
                 <div className={styles.formGroup}>
                   <label>Trip / Tour Name</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g., Paris Summer 2026"
+                  <select 
                     value={newNoteForm.trip_name}
                     onChange={(e) => setNewNoteForm({...newNoteForm, trip_name: e.target.value})}
                     required 
-                  />
+                    className={styles.formInput}
+                  >
+                    <option value="" disabled>Select a Trip</option>
+                    {tours.map(t => (
+                      <option key={t.id} value={t.title}>{t.title}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className={styles.formGroup}>
                   <label>Note Content</label>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Compass, LayoutDashboard, MapPin, Wallet, Activity, BookOpen, Folder, Settings, Bell } from 'lucide-react';
+import { Compass, LayoutDashboard, Wallet, Activity, BookOpen, Folder, Settings, Bell } from 'lucide-react';
 import styles from './ProductShowcase.module.css';
 
 export default function ProductShowcase() {
@@ -43,8 +43,7 @@ export default function ProductShowcase() {
               </div>
               <div className={styles.sidebarNav}>
                 <div className={`${styles.navItem} ${styles.active}`}><LayoutDashboard size={18} /> Dashboard</div>
-                <div className={styles.navItem}><MapPin size={18} /> Map</div>
-                <div className={styles.navItem}><Wallet size={18} /> Budget</div>
+                                <div className={styles.navItem}><Wallet size={18} /> Budget</div>
                 <div className={styles.navItem}><Activity size={18} /> Activities</div>
                 <div className={styles.navItem}><BookOpen size={18} /> Notes</div>
                 <div className={styles.navItem}><Folder size={18} /> Documents</div>
@@ -107,17 +106,7 @@ export default function ProductShowcase() {
                   </div>
                 </div>
                 
-                {/* Map Panel Placeholder */}
-                <div className={styles.mapPanel}>
-                  <h3 className={styles.panelTitle}>Trip Map</h3>
-                  <div className={styles.mapGraphic}>
-                    {/* Abstract map representation */}
-                    <div className={styles.routeLine} />
-                    <div className={`${styles.pin} ${styles.pin1}`}><MapPin size={16} color="var(--color-primary)" fill="var(--color-primary)" /><span>Rome</span></div>
-                    <div className={`${styles.pin} ${styles.pin2}`}><MapPin size={16} color="var(--color-primary)" fill="var(--color-primary)" /><span>Florence</span></div>
-                    <div className={`${styles.pin} ${styles.pin3}`}><MapPin size={16} color="var(--color-primary)" fill="var(--color-primary)" /><span>Venice</span></div>
-                  </div>
-                </div>
+
                 
                 {/* Budget Panel */}
                 <div className={styles.budgetPanel}>
