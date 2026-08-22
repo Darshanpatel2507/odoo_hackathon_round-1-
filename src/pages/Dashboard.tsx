@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Compass, LayoutDashboard, MapPin, Wallet, Activity, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check
+  Sparkles, Check, FileText, Ticket, Download, Trash2,
+  FileCheck, Shield, ChevronRight, Upload, X
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -20,6 +21,25 @@ interface DayPlan {
   activities: string[];
   image: string;
   coordinates: { x: number; y: number };
+}
+
+interface DocumentItem {
+  id: string;
+  name: string;
+  category: 'Transit' | 'Hotel' | 'Activity' | 'Identity' | 'Insurance' | 'Other';
+  fileType: 'PDF' | 'Ticket' | 'Image';
+  fileSize: string;
+  uploadedAt: string;
+  notes?: string;
+}
+
+interface AdventureFolder {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  tag: string;
+  documents: DocumentItem[];
 }
 
 const initialTripDays: DayPlan[] = [
@@ -65,6 +85,126 @@ const initialTripDays: DayPlan[] = [
   }
 ];
 
+const initialAdventureFolders: AdventureFolder[] = [
+  {
+    id: 'italy',
+    title: 'Italy Adventure',
+    subtitle: 'Rome • Florence • Venice • Amalfi Coast',
+    image: '/assets/images/showcase-rome.jpg',
+    tag: 'Europe',
+    documents: [
+      {
+        id: 'doc-it-1',
+        name: 'EU Rail Pass - Frecciarossa High-Speed',
+        category: 'Transit',
+        fileType: 'PDF',
+        fileSize: '1.4 MB',
+        uploadedAt: 'May 18, 2026',
+        notes: 'Coach 4, Seat 21A & 21B'
+      },
+      {
+        id: 'doc-it-2',
+        name: 'Rome Boutique Hotel Voucher & Check-in',
+        category: 'Hotel',
+        fileType: 'PDF',
+        fileSize: '2.1 MB',
+        uploadedAt: 'May 19, 2026',
+        notes: 'Check-in: 02:00 PM'
+      },
+      {
+        id: 'doc-it-3',
+        name: 'Colosseum VIP Guided Tour Tickets',
+        category: 'Activity',
+        fileType: 'Ticket',
+        fileSize: '850 KB',
+        uploadedAt: 'May 20, 2026',
+        notes: 'Priority Gladiator Arena Gate'
+      },
+      {
+        id: 'doc-it-4',
+        name: 'International Travel Health Insurance',
+        category: 'Insurance',
+        fileType: 'PDF',
+        fileSize: '3.2 MB',
+        uploadedAt: 'May 15, 2026',
+        notes: 'Policy #GLB-IT-99201'
+      }
+    ]
+  },
+  {
+    id: 'switzerland',
+    title: 'Switzerland Adventure',
+    subtitle: 'Zurich • Interlaken • Zermatt • Lucerne',
+    image: '/assets/images/template-european-highlights.jpg',
+    tag: 'Alps',
+    documents: [
+      {
+        id: 'doc-ch-1',
+        name: 'Swiss Travel Pass Consecutive 8-Day Pass',
+        category: 'Transit',
+        fileType: 'PDF',
+        fileSize: '1.8 MB',
+        uploadedAt: 'Jun 10, 2026',
+        notes: 'Valid across all SBB trains & mountain boats'
+      },
+      {
+        id: 'doc-ch-2',
+        name: 'Jungfraujoch Top of Europe Mountain Rail Pass',
+        category: 'Activity',
+        fileType: 'Ticket',
+        fileSize: '920 KB',
+        uploadedAt: 'Jun 12, 2026',
+        notes: 'Eiger Express cable car included'
+      },
+      {
+        id: 'doc-ch-3',
+        name: 'Zermatt Matterhorn Chalet Reservation',
+        category: 'Hotel',
+        fileType: 'PDF',
+        fileSize: '2.4 MB',
+        uploadedAt: 'Jun 14, 2026',
+        notes: 'Balcony with direct Matterhorn view'
+      }
+    ]
+  },
+  {
+    id: 'vadodara',
+    title: 'Vadodara Adventure',
+    subtitle: 'Laxmi Vilas • Sayaji Baug • Statue of Unity • Champaner',
+    image: '/assets/images/template-india-golden-triangle.jpg',
+    tag: 'Heritage',
+    documents: [
+      {
+        id: 'doc-vd-1',
+        name: 'IndiGo Flight Confirmation (DEL → BDQ)',
+        category: 'Transit',
+        fileType: 'PDF',
+        fileSize: '1.1 MB',
+        uploadedAt: 'Jul 02, 2026',
+        notes: 'Flight 6E-2419 • Terminal 1'
+      },
+      {
+        id: 'doc-vd-2',
+        name: 'Laxmi Vilas Palace Royal Heritage Pass',
+        category: 'Activity',
+        fileType: 'Ticket',
+        fileSize: '780 KB',
+        uploadedAt: 'Jul 04, 2026',
+        notes: 'Includes Audio Guide & Maharaja Fatehsingh Museum'
+      },
+      {
+        id: 'doc-vd-3',
+        name: 'Grand Mercure Vadodara Surya Palace Stay',
+        category: 'Hotel',
+        fileType: 'PDF',
+        fileSize: '1.9 MB',
+        uploadedAt: 'Jul 03, 2026',
+        notes: 'Deluxe Suite • Breakfast Included'
+      }
+    ]
+  }
+];
+
 const aiSuggestionsList = [
   {
     city: 'Rome',
@@ -102,6 +242,16 @@ export default function Dashboard() {
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [completedActivities, setCompletedActivities] = useState<string[]>(['Colosseum Tour']);
 
+  // Document Section States
+  const [adventureFolders, setAdventureFolders] = useState<AdventureFolder[]>(initialAdventureFolders);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [showAddDocModal, setShowAddDocModal] = useState(false);
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocCategory, setNewDocCategory] = useState<DocumentItem['category']>('Transit');
+  const [newDocType, setNewDocType] = useState<DocumentItem['fileType']>('PDF');
+  const [newDocNotes, setNewDocNotes] = useState('');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const handleLogout = async () => {
     navigate('/');
     await signOut();
@@ -114,6 +264,59 @@ export default function Dashboard() {
       setCompletedActivities([...completedActivities, act]);
     }
   };
+
+  // Add Document Handler
+  const handleAddDocument = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDocTitle.trim() || !selectedFolderId) return;
+
+    const newDoc: DocumentItem = {
+      id: `doc-${Date.now()}`,
+      name: newDocTitle.trim(),
+      category: newDocCategory,
+      fileType: newDocType,
+      fileSize: `${(Math.random() * 2 + 0.5).toFixed(1)} MB`,
+      uploadedAt: 'Today',
+      notes: newDocNotes.trim() || undefined
+    };
+
+    setAdventureFolders(prev => prev.map(folder => {
+      if (folder.id === selectedFolderId) {
+        return {
+          ...folder,
+          documents: [newDoc, ...folder.documents]
+        };
+      }
+      return folder;
+    }));
+
+    // Reset Form
+    setNewDocTitle('');
+    setNewDocCategory('Transit');
+    setNewDocType('PDF');
+    setNewDocNotes('');
+    setShowAddDocModal(false);
+
+    // Toast
+    setToastMessage(`Added "${newDoc.name}" to documents!`);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Delete Document Handler
+  const handleDeleteDocument = (folderId: string, docId: string, docName: string) => {
+    if (!window.confirm(`Are you sure you want to remove "${docName}"?`)) return;
+    setAdventureFolders(prev => prev.map(folder => {
+      if (folder.id === folderId) {
+        return {
+          ...folder,
+          documents: folder.documents.filter(d => d.id !== docId)
+        };
+      }
+      return folder;
+    }));
+  };
+
+  const activeAdventureFolder = adventureFolders.find(f => f.id === selectedFolderId);
 
   return (
     <div className={styles.dashboardContainer}>
@@ -163,7 +366,9 @@ export default function Dashboard() {
             </button>
             <button 
               className={`${styles.navItem} ${activeTab === 'documents' ? styles.active : ''}`}
-              onClick={() => setActiveTab('documents')}
+              onClick={() => {
+                setActiveTab('documents');
+              }}
             >
               <Folder size={19} />
               <span>Documents</span>
@@ -205,8 +410,16 @@ export default function Dashboard() {
         {/* Top Header */}
         <header className={styles.topHeader}>
           <div className={styles.tripHeader}>
-            <h1 className={styles.tripTitle}>Italy Adventure</h1>
-            <p className={styles.tripSubtitle}>May 20 - June 2 • 14 Days • 4 Cities</p>
+            <h1 className={styles.tripTitle}>
+              {activeTab === 'documents' 
+                ? 'Travel Documents' 
+                : 'Italy Adventure'}
+            </h1>
+            <p className={styles.tripSubtitle}>
+              {activeTab === 'documents'
+                ? 'Store, manage, and access boarding passes, hotel reservations, and activity tickets.'
+                : 'May 20 - June 2 • 14 Days • 4 Cities'}
+            </p>
           </div>
 
           <div className={styles.headerControls}>
@@ -233,6 +446,13 @@ export default function Dashboard() {
             </button>
           </div>
         </header>
+
+        {/* Action Toast Notification */}
+        {toastMessage && (
+          <div className={styles.notificationToast}>
+            <p>✅ <strong>Success:</strong> {toastMessage}</p>
+          </div>
+        )}
 
         {/* Notifications Toast */}
         {showNotificationToast && (
@@ -490,26 +710,163 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Documents Tab View */}
+        {/* FULL PAGE DOCUMENTS VAULT */}
         {activeTab === 'documents' && (
-          <div className={styles.fullscreenView}>
-            <h2 className={styles.viewHeading}>Travel Documents & Bookings</h2>
-            <div className={styles.documentsGrid}>
-              <div className={styles.docCard}>
-                <Folder size={24} color="var(--color-primary)" />
-                <div>
-                  <h4>EU Rail Passes</h4>
-                  <p>PDF • 1.2 MB</p>
+          <div className={styles.documentsContainer}>
+            {/* View A: Adventure Folder Blocks Selection */}
+            {selectedFolderId === null ? (
+              <div className={styles.adventureFoldersView}>
+                <div className={styles.docVaultHeader}>
+                  <div>
+                    <h2 className={styles.vaultTitle}>Adventure Document Vaults</h2>
+                    <p className={styles.vaultSubtitle}>
+                      Select an adventure destination block to view, organize, or add travel documents.
+                    </p>
+                  </div>
+                  <div className={styles.vaultBadge}>
+                    <Shield size={16} />
+                    <span>3 Secure Vaults</span>
+                  </div>
+                </div>
+
+                <div className={styles.adventureGridBlocks}>
+                  {adventureFolders.map((folder) => (
+                    <motion.div
+                      key={folder.id}
+                      className={styles.adventureFolderCard}
+                      onClick={() => setSelectedFolderId(folder.id)}
+                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                    >
+                      <div 
+                        className={styles.folderImageCover}
+                        style={{ backgroundImage: `url(${folder.image})` }}
+                      >
+                        <span className={styles.folderRegionTag}>{folder.tag}</span>
+                        <span className={styles.folderCountTag}>
+                          <FileCheck size={14} />
+                          {folder.documents.length} Files
+                        </span>
+                      </div>
+
+                      <div className={styles.folderCardBody}>
+                        <div className={styles.folderTitleRow}>
+                          <h3 className={styles.folderHeading}>{folder.title}</h3>
+                          <div className={styles.openArrowBtn}>
+                            <ChevronRight size={18} />
+                          </div>
+                        </div>
+                        <p className={styles.folderSubtext}>{folder.subtitle}</p>
+
+                        <div className={styles.folderFooter}>
+                          <span className={styles.folderActionHint}>Click to open documents</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-              <div className={styles.docCard}>
-                <Folder size={24} color="var(--color-primary)" />
-                <div>
-                  <h4>Hotel Reservations</h4>
-                  <p>PDF • 2.8 MB</p>
+            ) : (
+              /* View B: Inside Clicked Adventure Block */
+              activeAdventureFolder && (
+                <div className={styles.adventureDetailView}>
+                  {/* Top Navigation & Action Header */}
+                  <div className={styles.adventureDetailTopBar}>
+                    <button 
+                      className={styles.backToFoldersBtn}
+                      onClick={() => setSelectedFolderId(null)}
+                    >
+                      <ArrowLeft size={16} />
+                      <span>Back to All Adventures</span>
+                    </button>
+
+                    <button 
+                      className={styles.addDocPrimaryBtn}
+                      onClick={() => setShowAddDocModal(true)}
+                    >
+                      <Plus size={18} />
+                      <span>Add Document</span>
+                    </button>
+                  </div>
+
+                  <div className={styles.adventureHeaderBanner}>
+                    <div className={styles.bannerInfo}>
+                      <span className={styles.bannerTag}>{activeAdventureFolder.tag}</span>
+                      <h2 className={styles.bannerTitle}>{activeAdventureFolder.title}</h2>
+                      <p className={styles.bannerSub}>{activeAdventureFolder.subtitle}</p>
+                    </div>
+                    <div className={styles.bannerStats}>
+                      <span className={styles.totalFilesCount}>
+                        {activeAdventureFolder.documents.length} Total Documents
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Documents List / Grid */}
+                  <div className={styles.docsListContainer}>
+                    {activeAdventureFolder.documents.length === 0 ? (
+                      <div className={styles.emptyDocsBox}>
+                        <Folder size={48} className={styles.emptyIcon} />
+                        <h3>No documents added yet</h3>
+                        <p>Click the "Add Document" button above to upload your first travel file.</p>
+                        <button 
+                          className={styles.addDocPrimaryBtn}
+                          onClick={() => setShowAddDocModal(true)}
+                        >
+                          <Plus size={16} />
+                          <span>Add Document</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={styles.docsGrid}>
+                        {activeAdventureFolder.documents.map((doc) => (
+                          <div key={doc.id} className={styles.docFileCard}>
+                            <div className={styles.docCardTop}>
+                              <div className={styles.docIconWrapper}>
+                                {doc.category === 'Transit' && <Compass size={22} color="var(--color-primary)" />}
+                                {doc.category === 'Activity' && <Ticket size={22} color="#D96538" />}
+                                {doc.category === 'Hotel' && <BookOpen size={22} color="#E8A33D" />}
+                                {doc.category === 'Insurance' && <Shield size={22} color="#27C93F" />}
+                                {(doc.category === 'Identity' || doc.category === 'Other') && <FileText size={22} color="#6B5D50" />}
+                              </div>
+                              <span className={styles.docCategoryBadge}>{doc.category}</span>
+                            </div>
+
+                            <h4 className={styles.docCardTitle}>{doc.name}</h4>
+                            
+                            {doc.notes && (
+                              <p className={styles.docNotesText}>📌 {doc.notes}</p>
+                            )}
+
+                            <div className={styles.docMetaRow}>
+                              <span>{doc.fileType} • {doc.fileSize}</span>
+                              <span>Added {doc.uploadedAt}</span>
+                            </div>
+
+                            <div className={styles.docCardActions}>
+                              <button 
+                                className={styles.downloadDocBtn}
+                                onClick={() => alert(`Downloading "${doc.name}" (${doc.fileSize})...`)}
+                              >
+                                <Download size={14} />
+                                <span>Download</span>
+                              </button>
+                              
+                              <button 
+                                className={styles.deleteDocBtn}
+                                onClick={() => handleDeleteDocument(activeAdventureFolder.id, doc.id, doc.name)}
+                                title="Delete Document"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
+              )
+            )}
           </div>
         )}
 
@@ -534,6 +891,113 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* Add Document Form Modal */}
+      <AnimatePresence>
+        {showAddDocModal && activeAdventureFolder && (
+          <div className={styles.modalOverlay} onClick={() => setShowAddDocModal(false)}>
+            <motion.div 
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            >
+              <div className={styles.modalHeader}>
+                <div className={styles.modalTitle}>
+                  <Upload size={22} color="var(--color-primary)" />
+                  <h3>Add Document to {activeAdventureFolder.title}</h3>
+                </div>
+                <button className={styles.closeBtn} onClick={() => setShowAddDocModal(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleAddDocument} className={styles.addDocForm}>
+                <div className={styles.formGroup}>
+                  <label htmlFor="docTitle">Document Name / Description *</label>
+                  <input 
+                    id="docTitle"
+                    type="text" 
+                    placeholder="e.g. Flight Confirmation, Hotel Voucher, Entry Pass"
+                    value={newDocTitle}
+                    onChange={(e) => setNewDocTitle(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="docCategory">Category</label>
+                    <select 
+                      id="docCategory"
+                      value={newDocCategory}
+                      onChange={(e) => setNewDocCategory(e.target.value as DocumentItem['category'])}
+                    >
+                      <option value="Transit">Transit (Flight / Train / Ferry)</option>
+                      <option value="Hotel">Hotel / Accommodation</option>
+                      <option value="Activity">Activity / Tour Ticket</option>
+                      <option value="Identity">Identity / Visa / Passport</option>
+                      <option value="Insurance">Travel Insurance</option>
+                      <option value="Other">Other Document</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label htmlFor="docType">Format</label>
+                    <select 
+                      id="docType"
+                      value={newDocType}
+                      onChange={(e) => setNewDocType(e.target.value as DocumentItem['fileType'])}
+                    >
+                      <option value="PDF">PDF File</option>
+                      <option value="Ticket">Mobile QR / Ticket</option>
+                      <option value="Image">JPEG / PNG Image</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>Upload File</label>
+                  <div className={styles.uploadDropZone}>
+                    <Upload size={28} className={styles.uploadIcon} />
+                    <p><strong>Click to browse</strong> or drag & drop travel document</p>
+                    <span>Supports PDF, PNG, JPG up to 25MB</span>
+                  </div>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="docNotes">Notes / Reference No. (Optional)</label>
+                  <input 
+                    id="docNotes"
+                    type="text" 
+                    placeholder="e.g. Booking ID #99281, Seat 12A, Gates open 08:30"
+                    value={newDocNotes}
+                    onChange={(e) => setNewDocNotes(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.formActions}>
+                  <button 
+                    type="button" 
+                    className={styles.cancelBtn}
+                    onClick={() => setShowAddDocModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className={styles.submitDocBtn}
+                  >
+                    <Plus size={16} />
+                    <span>Upload Document</span>
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* AI Travel Companion Modal */}
       <AnimatePresence>
