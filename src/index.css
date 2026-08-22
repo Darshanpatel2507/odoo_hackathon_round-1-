@@ -9,6 +9,7 @@
   --color-white: #FFFFFF;
   --color-gray-100: #F3EAE0;
   --color-gray-200: #E5D5C5;
+  --color-gray-300: #D6C6B6;
   --color-gray-400: #A89B8F;
   --color-gray-600: #6B5D50;
   --color-gray-800: #3A2A1E;
@@ -76,4 +77,14 @@ button {
   cursor: pointer;
   border: none;
   outline: none;
+  transition: all var(--transition-fast);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+button:active {
+  transform: translateY(0);
 }

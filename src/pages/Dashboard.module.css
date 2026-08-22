@@ -17,6 +17,10 @@
   padding: 28px 20px;
   flex-shrink: 0;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .sidebarTop {
@@ -1865,4 +1869,91 @@
   border-top: 1px solid #EBE0D2;
   font-size: 0.8rem;
   color: #A89B8F;
+}
+
+.budgetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.budgetBlock {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.budgetBlock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.budgetBlock h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: var(--color-gray-900);
+}
+
+.budgetSummaryRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.budgetStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.budgetLabel {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+}
+
+.budgetValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+}
+
+.overBudget {
+  color: #ef4444;
+}
+
+.expensesListModal {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.expenseItemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: var(--color-gray-50);
+  border-radius: 8px;
+}
+
+.addExpenseSection {
+  border-top: 1px solid var(--color-gray-200);
+  padding-top: 1.5rem;
+}
+
+.addExpenseSection h4 {
+  margin: 0 0 1rem 0;
+}
+
+.expenseFormGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr auto;
+  gap: 0.5rem;
+  align-items: center;
 }
