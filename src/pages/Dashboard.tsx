@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+  Compass, LayoutDashboard, Briefcase, MapPin, Wallet, Activity, BookOpen, 
+  Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
+  Sparkles, Check, User
   Compass, MapPin, Wallet, Activity, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
   Sparkles, Check, FileText, Shield, FileCheck, ChevronRight,
   Ticket, Download, Trash2, Upload, X
 } from 'lucide-react';
+import ProfileTab from '../components/ProfileTab';
+import MyTripsTab, { type Trip } from '../components/MyTripsTab';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import styles from './Dashboard.module.css';
 
+type TabType = 'dashboard' | 'my-trips' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings' | 'profile';
 type TabType = 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
 
 interface Expense {
@@ -508,11 +514,20 @@ export default function Dashboard() {
 
           <nav className={styles.sidebarNav}>
             <button 
+              className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              <LayoutDashboard size={19} />
+              <span>Dashboard</span>
+            </button>
+            <button 
+              className={`${styles.navItem} ${activeTab === 'my-trips' ? styles.active : ''}`}
+              onClick={() => setActiveTab('my-trips')}
               className={`${styles.navItem} ${activeTab === 'map' ? styles.active : ''}`}
               onClick={() => setActiveTab('map')}
             >
-              <MapPin size={19} />
-              <span>Map</span>
+              <Briefcase size={19} />
+              <span>My Trips</span>
             </button>
             <button 
               className={`${styles.navItem} ${activeTab === 'budget' ? styles.active : ''}`}
@@ -521,13 +536,7 @@ export default function Dashboard() {
               <Wallet size={19} />
               <span>Budget</span>
             </button>
-            <button 
-              className={`${styles.navItem} ${activeTab === 'activities' ? styles.active : ''}`}
-              onClick={() => setActiveTab('activities')}
-            >
-              <Activity size={19} />
-              <span>Activities</span>
-            </button>
+
             <button 
               className={`${styles.navItem} ${activeTab === 'notes' ? styles.active : ''}`}
               onClick={() => setActiveTab('notes')}
@@ -555,7 +564,7 @@ export default function Dashboard() {
         </div>
 
         <div className={styles.sidebarBottom}>
-          <div className={styles.userCard}>
+          <div className={styles.userCard} onClick={() => setActiveTab('profile')}>
             <div className={styles.userAvatar}>
               {user?.email ? user.email[0].toUpperCase() : 'G'}
             </div>
@@ -579,6 +588,13 @@ export default function Dashboard() {
       {/* Main Workspace Area */}
       <main className={styles.mainCanvas}>
         {/* Top Header */}
+        {/* Top Header (Hidden on global tabs) */}
+        {activeTab !== 'my-trips' && activeTab !== 'profile' && (
+          <header className={styles.topHeader}>
+            <div className={styles.tripHeader}>
+              <h1 className={styles.tripTitle}>{currentTrip ? currentTrip.title : 'My Workspace'}</h1>
+              <p className={styles.tripSubtitle}>{currentTrip ? `${currentTrip.dateRange} • ${currentTrip.location}` : 'Select a trip from My Trips to get started'}</p>
+            </div>
         <header className={styles.topHeader}>
           <div className={styles.tripHeader}>
             <h1 className={styles.tripTitle}>
@@ -611,12 +627,31 @@ export default function Dashboard() {
               <span>Share</span>
             </button>
 
-            <button className={styles.actionBtnPrimary} onClick={() => setShowAiModal(true)}>
-              <Sparkles size={16} />
-              <span>AI Guide</span>
-            </button>
-          </div>
-        </header>
+            <div className={styles.headerControls}>
+              <button 
+                className={styles.iconBtn}
+                onClick={() => {
+                  setShowNotificationToast(!showNotificationToast);
+                  setNotificationCount(0);
+                }}
+                title="Notifications"
+              >
+                <Bell size={20} />
+                {notificationCount > 0 && <span className={styles.badge}>{notificationCount}</span>}
+              </button>
+
+              <button className={styles.actionBtnSecondary} onClick={() => alert('Trip link copied to clipboard!')}>
+                <Share2 size={16} />
+                <span>Share</span>
+              </button>
+
+              <button className={styles.actionBtnPrimary} onClick={() => setShowAiModal(true)}>
+                <Sparkles size={16} />
+                <span>AI Guide</span>
+              </button>
+            </div>
+          </header>
+        )}
 
         {/* Action Toast Notification */}
         {toastMessage && (
@@ -633,29 +668,163 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Dynamic Tab Views */}
+        {activeTab === 'dashboard' && (
+          <div className={styles.contentGrid}>
+            {/* Left Column: Day by Day Plan */}
+            <section className={styles.planSection}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Day by Day Plan</h2>
+                <span className={styles.dayCounter}>{initialTripDays.length} Stops</span>
+              </div>
+
+              <div className={styles.dayList}>
+                {initialTripDays.map((day) => (
+                  <div 
+                    key={day.id} 
+                    className={`${styles.dayCard} ${selectedDay === day.id ? styles.selectedCard : ''}`}
+                    onClick={() => setSelectedDay(day.id)}
+                  >
+                    <div className={styles.dayBadge}>{day.dayBadge}</div>
+                    
+                    <div className={styles.dayDetails}>
+                      <h3 className={styles.dayCity}>{day.title}</h3>
+                      <div className={styles.activityTags}>
+                        {day.activities.slice(0, 2).map((act, idx) => (
+                          <p key={idx} className={styles.activityItem}>
+                            • {act}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div 
+                      className={styles.dayThumbnail} 
+                      style={{ backgroundImage: `url(${day.image})` }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Middle Column: Trip Map */}
+            <section className={styles.mapSection}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Trip Map</h2>
+                <span className={styles.mapBadge}>Interactive Route</span>
+              </div>
+
+              <div className={styles.mapCanvas}>
+                {/* SVG Route Connection Lines */}
+                <svg className={styles.mapSvg} viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <path 
+                    d="M 38 30 Q 42 42 50 52 T 68 22 Q 66 50 62 78" 
+                    fill="none" 
+                    stroke="var(--color-primary)" 
+                    strokeWidth="1.8" 
+                    strokeDasharray="3 3"
+                    className={styles.animatedRoute}
+                  />
+                </svg>
+
+                {/* City Pins on Map */}
+                {initialTripDays.map((stop) => (
+                  <div 
+                    key={stop.id}
+                    className={`${styles.mapMarker} ${selectedDay === stop.id ? styles.activeMarker : ''}`}
+                    style={{ left: `${stop.coordinates.x}%`, top: `${stop.coordinates.y}%` }}
+                    onClick={() => setSelectedDay(stop.id)}
+                  >
+                    <div className={styles.pinDot}>
+                      <MapPin size={16} fill="var(--color-primary)" color="var(--color-primary)" />
+                    </div>
+                    <span className={styles.pinLabel}>{stop.city}</span>
+                  </div>
+                ))}
+
+                <div className={styles.mapFooterInfo}>
+                  <span>📍 {initialTripDays.find(d => d.id === selectedDay)?.city || 'Rome'} Highlighted</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Right Column: Budget Overview & Companion */}
+            <section className={styles.budgetSection}>
+              <div className={styles.budgetCard}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}>Budget Overview</h2>
+                </div>
+
+                <div className={styles.progressRow}>
+                  <span className={styles.progressLabel}>Overall Progress</span>
+                  <span className={styles.progressPercentage}>72%</span>
+                </div>
+                
+                <div className={styles.progressBar}>
+                  <motion.div 
+                    className={styles.progressFill} 
+                    initial={{ width: 0 }}
+                    animate={{ width: '72%' }}
+                    transition={{ duration: 0.8, ease: 'easeOut' }}
+                  />
+                </div>
+
+                <div className={styles.categoryList}>
+                  <div className={styles.categoryItem}>
+                    <div className={styles.categoryIconWrap}>✈️</div>
+                    <span className={styles.categoryName}>Transport</span>
+                    <span className={styles.categoryVal}>70%</span>
+                  </div>
+
+                  <div className={styles.categoryItem}>
+                    <div className={styles.categoryIconWrap}>🎫</div>
+                    <span className={styles.categoryName}>Activities</span>
+                    <span className={styles.categoryVal}>65%</span>
+                  </div>
+
+                  <div className={styles.categoryItem}>
+                    <div className={styles.categoryIconWrap}>🍕</div>
+                    <span className={styles.categoryName}>Food</span>
+                    <span className={styles.categoryVal}>75%</span>
+                  </div>
+
+                  <div className={styles.categoryItem}>
+                    <div className={styles.categoryIconWrap}>🏨</div>
+                    <span className={styles.categoryName}>Stays</span>
+                    <span className={styles.categoryVal}>80%</span>
+                  </div>
+                </div>
+
+                {/* Travel Companion Box */}
+                <div className={styles.companionBox}>
+                  <div className={styles.companionHeader}>
+                    <Sparkles size={18} color="var(--color-primary)" />
+                    <h3 className={styles.companionTitle}>Travel Companion</h3>
+                  </div>
+                  <p className={styles.companionDesc}>
+                    Let our AI suggest the best experiences and hidden gems for your trip.
+                  </p>
+                  <button 
+                    className={styles.suggestBtn}
+                    onClick={() => setShowAiModal(true)}
+                  >
+                    Get Suggestions
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* My Trips Tab View */}
+        {activeTab === 'my-trips' && (
         {/* Map Tab View */}
         {activeTab === 'map' && (
           <div className={styles.fullscreenView}>
-            <div className={styles.fullMapWrapper}>
-              <h2 className={styles.viewHeading}>Complete Italy Route & Transit Breakdown</h2>
-              <div className={styles.routeCardsGrid}>
-                <div className={styles.routeCard}>
-                  <h4>Leg 1: Rome → Florence</h4>
-                  <p>🚆 Frecciarossa High-speed rail: 1h 35m</p>
-                  <span className={styles.statusTag}>Booked</span>
-                </div>
-                <div className={styles.routeCard}>
-                  <h4>Leg 2: Florence → Venice</h4>
-                  <p>🚆 Italo Treno: 2h 05m</p>
-                  <span className={styles.statusTag}>Booked</span>
-                </div>
-                <div className={styles.routeCard}>
-                  <h4>Leg 3: Venice → Naples / Amalfi</h4>
-                  <p>✈️ Short flight / Scenic train: 3h 40m</p>
-                  <span className={styles.statusTagPending}>Suggested</span>
-                </div>
-              </div>
-            </div>
+            <MyTripsTab onOpenTrip={(trip) => {
+              setCurrentTrip(trip);
+              setActiveTab('activities');
+            }} />
           </div>
         )}
 
@@ -762,31 +931,92 @@ export default function Dashboard() {
         {/* Activities Tab View */}
         {activeTab === 'activities' && (
           <div className={styles.fullscreenView}>
-            <h2 className={styles.viewHeading}>Itinerary Activity Checklist</h2>
-            <div className={styles.activityGrid}>
-              {initialTripDays.map(day => (
-                <div key={day.id} className={styles.activityDayCard}>
-                  <h3>{day.title}</h3>
-                  <div className={styles.checklist}>
-                    {day.activities.map((act, i) => {
-                      const isDone = completedActivities.includes(act);
-                      return (
-                        <div 
-                          key={i} 
-                          className={`${styles.checkItem} ${isDone ? styles.checked : ''}`}
-                          onClick={() => toggleActivity(act)}
-                        >
-                          <div className={styles.checkBox}>
-                            {isDone && <Check size={14} />}
-                          </div>
-                          <span>{act}</span>
-                        </div>
-                      );
-                    })}
+            {!currentTrip && (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-gray-500)' }}>
+                <h2>No Trip Selected</h2>
+                <p>Go to "My Trips" and select a trip to view its activities.</p>
+              </div>
+            )}
+
+            {currentTrip?.status === 'completed' && (
+              <>
+                <h2 className={styles.viewHeading}>Trip Memories & Completed Activities</h2>
+                <div className={styles.activityGrid}>
+                  <div className={styles.activityDayCard}>
+                    <h3>Highlights</h3>
+                    <div className={styles.checklist}>
+                      <div className={`${styles.checkItem} ${styles.checked}`}>
+                        <div className={styles.checkBox}><Check size={14} /></div>
+                        <span>Visited the Eiffel Tower</span>
+                      </div>
+                      <div className={`${styles.checkItem} ${styles.checked}`}>
+                        <div className={styles.checkBox}><Check size={14} /></div>
+                        <span>Louvre Museum Tour</span>
+                      </div>
+                      <div className={`${styles.checkItem} ${styles.checked}`}>
+                        <div className={styles.checkBox}><Check size={14} /></div>
+                        <span>Seine River Cruise</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
+            
+            {currentTrip?.status === 'upcoming' && (
+              <>
+                <h2 className={styles.viewHeading}>Planning Checklist & To-Dos</h2>
+                <div className={styles.activityGrid}>
+                  <div className={styles.activityDayCard}>
+                    <h3>Before You Go</h3>
+                    <div className={styles.checklist}>
+                      <div className={styles.checkItem}>
+                        <div className={styles.checkBox}></div>
+                        <span>Book flight tickets</span>
+                      </div>
+                      <div className={styles.checkItem}>
+                        <div className={styles.checkBox}></div>
+                        <span>Reserve hotels</span>
+                      </div>
+                      <div className={styles.checkItem}>
+                        <div className={styles.checkBox}></div>
+                        <span>Buy travel insurance</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {currentTrip?.status === 'ongoing' && (
+              <>
+                <h2 className={styles.viewHeading}>Itinerary Activity Checklist</h2>
+                <div className={styles.activityGrid}>
+                  {initialTripDays.map(day => (
+                    <div key={day.id} className={styles.activityDayCard}>
+                      <h3>{day.title}</h3>
+                      <div className={styles.checklist}>
+                        {day.activities.map((act, i) => {
+                          const isDone = completedActivities.includes(act);
+                          return (
+                            <div 
+                              key={i} 
+                              className={`${styles.checkItem} ${isDone ? styles.checked : ''}`}
+                              onClick={() => toggleActivity(act)}
+                            >
+                              <div className={styles.checkBox}>
+                                {isDone && <Check size={14} />}
+                              </div>
+                              <span>{act}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -994,7 +1224,7 @@ export default function Dashboard() {
             <div className={styles.settingsForm}>
               <div className={styles.formGroup}>
                 <label>Trip Title</label>
-                <input type="text" defaultValue="Italy Adventure" />
+                <input type="text" defaultValue={currentTrip?.title || ''} key={currentTrip?.id || 'default'} placeholder="Enter trip title" />
               </div>
               <div className={styles.formGroup}>
                 <label>Primary Currency</label>
@@ -1005,6 +1235,13 @@ export default function Dashboard() {
                 </select>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Profile Tab View */}
+        {activeTab === 'profile' && (
+          <div className={styles.fullscreenView} style={{ padding: '24px 0' }}>
+            <ProfileTab />
           </div>
         )}
       </main>
