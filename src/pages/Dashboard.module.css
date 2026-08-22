@@ -615,6 +615,183 @@
   border: 1px solid #EBE0D2;
 }
 
+/* NEW BUDGET SECTION STYLES */
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.toursList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tourBox {
+  background-color: #FAF4EC;
+  border: 1px solid #EBE0D2;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.tourHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #EBE0D2;
+  padding-bottom: 12px;
+}
+
+.tourHeader h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #231712;
+  margin: 0;
+}
+
+.tourSummary {
+  display: flex;
+  gap: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.destinationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.destinationBox {
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(58, 42, 30, 0.08);
+}
+
+.destinationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.destinationHeader h4 {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  color: #3A2A1E;
+  margin: 0;
+}
+
+.destSummary {
+  display: flex;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6B5D50;
+}
+
+.expenseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.expenseItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: #F8F5F1;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.expenseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.expenseDesc {
+  font-weight: 600;
+  color: #231712;
+  font-size: 0.95rem;
+}
+
+.expenseCat {
+  font-size: 0.75rem;
+  color: #7E6F64;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.expenseAmt {
+  font-weight: 700;
+  color: #231712;
+}
+
+.addExpenseBtn {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px dashed var(--color-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.addExpenseBtn:hover {
+  background-color: rgba(193, 80, 46, 0.08);
+}
+
+.addExpenseForm {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background-color: #F8F5F1;
+  padding: 12px;
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.expenseInput {
+  padding: 8px 12px;
+  border: 1px solid #D4C5B9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  flex: 1;
+  min-width: 120px;
+}
+
+.saveExpenseBtn {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelExpenseBtn {
+  background-color: #EFE7DD;
+  color: #3A2A1E;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
 .companionHeader {
   display: flex;
   align-items: center;
@@ -873,34 +1050,541 @@
   border-top: 1px solid #EBE0D2;
 }
 
-.documentsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
+/* =========================================================
+   DOCUMENTS SECTION: VAULTS, BLOCKS & DETAIL VIEW
+   ========================================================= */
 
-.docCard {
+.documentsContainer {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.docVaultHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
   gap: 16px;
-  background-color: #FAF4EC;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #EBE0D2;
 }
 
-.docCard h4 {
-  font-family: var(--font-sans);
+.vaultTitle {
+  font-family: var(--font-serif);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #231712;
+  margin-bottom: 6px;
+}
+
+.vaultSubtitle {
   font-size: 0.95rem;
-  margin-bottom: 2px;
-}
-
-.docCard p {
-  font-size: 0.75rem;
-  color: #7E6F64;
+  color: #6B5D50;
   margin: 0;
 }
 
+.vaultBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FAF4EC;
+  border: 1px solid #EBE0D2;
+  color: #3A2A1E;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+}
+
+.adventureGridBlocks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.adventureFolderCard {
+  background-color: #FFFFFF;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(58, 42, 30, 0.05);
+  border: 1px solid rgba(58, 42, 30, 0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.adventureFolderCard:hover {
+  box-shadow: 0 10px 25px rgba(58, 42, 30, 0.12);
+  border-color: rgba(193, 80, 46, 0.4);
+}
+
+.folderImageCover {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.folderImageCover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 60%, rgba(35,23,18,0.7) 100%);
+}
+
+.folderRegionTag {
+  position: relative;
+  z-index: 2;
+  background: rgba(35, 23, 18, 0.8);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.folderCountTag {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.folderCardBody {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.folderTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.folderHeading {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #231712;
+  margin: 0;
+}
+
+.openArrowBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FAF4EC;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.adventureFolderCard:hover .openArrowBtn {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  transform: translateX(3px);
+}
+
+.folderSubtext {
+  font-size: 0.85rem;
+  color: #7E6F64;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.folderFooter {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #FAF4EC;
+}
+
+.folderActionHint {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Inside Specific Adventure View */
+.adventureDetailView {
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 18px rgba(58, 42, 30, 0.05);
+  border: 1px solid rgba(58, 42, 30, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.adventureDetailTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.backToFoldersBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FAF4EC;
+  border: 1px solid #EBE0D2;
+  color: #3A2A1E;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backToFoldersBtn:hover {
+  background-color: #231712;
+  color: #FFFFFF;
+  border-color: #231712;
+}
+
+.addDocPrimaryBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #C1502E 0%, #D96538 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 15px rgba(193, 80, 46, 0.35);
+}
+
+.addDocPrimaryBtn:hover {
+  background: linear-gradient(135deg, #D96538 0%, #E87A4F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(193, 80, 46, 0.45);
+}
+
+.adventureHeaderBanner {
+  background: #FAF4EC;
+  border-radius: 16px;
+  padding: 24px 28px;
+  border: 1px solid #EBE0D2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bannerTag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bannerTitle {
+  font-family: var(--font-serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #231712;
+  margin: 4px 0;
+}
+
+.bannerSub {
+  font-size: 0.9rem;
+  color: #6B5D50;
+  margin: 0;
+}
+
+.bannerStats {
+  background: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid #EBE0D2;
+}
+
+.totalFilesCount {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #231712;
+}
+
+/* Documents Grid */
+.docsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.docFileCard {
+  background-color: #FAF4EC;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #EBE0D2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all var(--transition-fast);
+}
+
+.docFileCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(58, 42, 30, 0.08);
+  border-color: rgba(193, 80, 46, 0.3);
+}
+
+.docCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.docIconWrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(58, 42, 30, 0.05);
+}
+
+.docCategoryBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #231712;
+  background-color: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #EBE0D2;
+}
+
+.docCardTitle {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #231712;
+  margin: 0;
+}
+
+.docNotesText {
+  font-size: 0.8rem;
+  color: #6B5D50;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.docMetaRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #7E6F64;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.docCardActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid #EBE0D2;
+}
+
+.downloadDocBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: #FFFFFF;
+  border: 1px solid #D5C7BA;
+  color: #231712;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.downloadDocBtn:hover {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.deleteDocBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  border: 1px solid #EBE0D2;
+  color: #A89B8F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.deleteDocBtn:hover {
+  color: #FF5F56;
+  background-color: #FFECEB;
+  border-color: #FF5F56;
+}
+
+.emptyDocsBox {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #FAF4EC;
+  border-radius: 16px;
+  border: 2px dashed #D5C7BA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.emptyIcon {
+  color: #A89B8F;
+  margin-bottom: 8px;
+}
+
+.emptyDocsBox h3 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: #231712;
+  margin: 0;
+}
+
+.emptyDocsBox p {
+  color: #6B5D50;
+  font-size: 0.9rem;
+  margin: 0 0 12px 0;
+}
+
+/* Add Document Form in Modal */
+.addDocForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.uploadDropZone {
+  border: 2px dashed var(--color-primary);
+  border-radius: 12px;
+  background-color: rgba(193, 80, 46, 0.03);
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.uploadDropZone:hover {
+  background-color: rgba(193, 80, 46, 0.08);
+}
+
+.uploadIcon {
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.uploadDropZone p {
+  font-size: 0.88rem;
+  color: #231712;
+  margin: 0 0 4px 0;
+}
+
+.uploadDropZone span {
+  font-size: 0.75rem;
+  color: #7E6F64;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #EBE0D2;
+}
+
+.cancelBtn {
+  background-color: #FFFFFF;
+  border: 1px solid #D5C7BA;
+  color: #6B5D50;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancelBtn:hover {
+  background-color: #FAF4EC;
+  color: #231712;
+}
+
+.submitDocBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #C1502E 0%, #D96538 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(193, 80, 46, 0.3);
+}
+
+.submitDocBtn:hover {
+  background: linear-gradient(135deg, #D96538 0%, #E87A4F 100%);
+  transform: translateY(-1px);
+}
+
+/* Settings Form */
 .settingsForm {
   max-width: 500px;
   display: flex;
@@ -917,6 +1601,7 @@
 .formGroup label {
   font-weight: 600;
   font-size: 0.9rem;
+  color: #231712;
 }
 
 .formGroup input, .formGroup select {
@@ -927,6 +1612,11 @@
   font-family: inherit;
   font-size: 0.95rem;
   outline: none;
+}
+
+.formGroup input:focus, .formGroup select:focus {
+  border-color: var(--color-primary);
+  background-color: #FFFFFF;
 }
 
 /* AI Modal Overlay */
@@ -1093,6 +1783,9 @@
   }
   .mainCanvas {
     padding: 24px 16px;
+  }
+  .formRow {
+    grid-template-columns: 1fr;
   }
 }
 
