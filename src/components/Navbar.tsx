@@ -42,7 +42,7 @@ export default function Navbar() {
           <div className={styles.linksContainer}>
             <a href="/#explore" className={styles.navLink}>Explore</a>
             <a href="/#how-it-works" className={styles.navLink}>How it Works</a>
-            <a href="/#pricing" className={styles.navLink}>Pricing</a>
+            <a href="/#templates" className={styles.navLink}>Templates</a>
           </div>
           
           <div className={styles.actionsContainer}>

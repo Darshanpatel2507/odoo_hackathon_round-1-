@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Camera } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import styles from './ProfileTab.module.css';
 
 export default function ProfileTab() {
@@ -30,13 +31,40 @@ export default function ProfileTab() {
     alert('Profile saved successfully!');
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Create a local URL for the demo (normally this uploads to Supabase Storage)
-      const url = URL.createObjectURL(file);
-      setAvatarUrl(url);
+    if (!file || !user) return;
+    
+    setIsUploading(true);
+    
+    // Upload to avatars bucket
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+    const filePath = `${user.id}/${fileName}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file);
+      
+    if (uploadError) {
+      alert("Error uploading avatar!");
+      setIsUploading(false);
+      return;
     }
+    
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+      
+    const publicUrl = data.publicUrl;
+    setAvatarUrl(publicUrl);
+    
+    // Optional: save to a profiles table if it exists, otherwise just localStorage for now
+    localStorage.setItem('profile_avatar', publicUrl);
+    
+    setIsUploading(false);
   };
 
 
@@ -65,9 +93,10 @@ export default function ProfileTab() {
             <button 
               className={styles.uploadBtn}
               onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
             >
               <Camera size={16} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'text-bottom' }} />
-              Change Photo
+              {isUploading ? 'Uploading...' : 'Change Photo'}
             </button>
             <input 
               type="file" 

@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { MapPin, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import styles from './Hero.module.css';
 
 export default function Hero() {
@@ -78,9 +79,9 @@ export default function Hero() {
               </div>
             </div>
             
-            <button className={styles.searchBtn}>
+            <Link to="/signup" className={styles.searchBtn} style={{display: 'inline-flex', textDecoration: 'none'}}>
               Start Planning <ArrowRight size={18} />
-            </button>
+            </Link>
           </motion.div>
         </motion.div>
       </div>
