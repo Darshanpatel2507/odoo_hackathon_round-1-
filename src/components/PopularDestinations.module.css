@@ -1,0 +1,138 @@
+.section {
+  padding: 80px 0;
+  background-color: var(--color-background);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.heading {
+  color: var(--color-primary);
+  font-size: clamp(3rem, 5vw, 4rem);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.carouselContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-white);
+  color: var(--color-accent);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  opacity: 0;
+}
+
+.carouselContainer:hover .navButton {
+  opacity: 1;
+}
+
+.navButton:hover {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prevButton {
+  left: -24px;
+}
+
+.nextButton {
+  right: -24px;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.card {
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-xl);
+}
+
+.imageContainer {
+  height: 200px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.cardContent {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.metaBadge {
+  font-size: 0.875rem;
+  color: var(--color-highlight);
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .navButton {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
