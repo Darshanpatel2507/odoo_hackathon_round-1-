@@ -109,7 +109,9 @@ export default function Dashboard() {
 
   const toggleActivity = (act: string) => {
     if (completedActivities.includes(act)) {
-      setCompletedActivities(completedActivities.filter(a => a !== act));
+      if (window.confirm(`Are you sure you want to remove "${act}" from completed activities?`)) {
+        setCompletedActivities(completedActivities.filter(a => a !== act));
+      }
     } else {
       setCompletedActivities([...completedActivities, act]);
     }
@@ -424,15 +426,15 @@ export default function Dashboard() {
               <div className={styles.budgetMetrics}>
                 <div className={styles.metricCard}>
                   <span>Total Budget</span>
-                  <h3>$4,200</h3>
+                  <h3>₹4,200</h3>
                 </div>
                 <div className={styles.metricCard}>
                   <span>Total Spent</span>
-                  <h3 className={styles.spentColor}>$3,024 (72%)</h3>
+                  <h3 className={styles.spentColor}>₹3,024 (72%)</h3>
                 </div>
                 <div className={styles.metricCard}>
                   <span>Remaining</span>
-                  <h3 className={styles.remainingColor}>$1,176</h3>
+                  <h3 className={styles.remainingColor}>₹1,176</h3>
                 </div>
               </div>
             </div>
@@ -526,7 +528,7 @@ export default function Dashboard() {
                 <label>Primary Currency</label>
                 <select defaultValue="EUR">
                   <option value="EUR">EUR (€)</option>
-                  <option value="USD">USD ($)</option>
+                  <option value="INR">INR (₹)</option>
                   <option value="GBP">GBP (£)</option>
                 </select>
               </div>
