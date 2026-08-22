@@ -7,25 +7,25 @@ const destinations = [
     id: 1,
     name: 'Santorini, Greece',
     activities: '12 activities',
-    image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=800'
+    image: '/assets/images/destination-santorini.jpg'
   },
   {
     id: 2,
     name: 'Marrakech, Morocco',
     activities: '15 activities',
-    image: 'https://images.unsplash.com/photo-1597212618440-806262de4f6b?auto=format&fit=crop&q=80&w=800'
+    image: '/assets/images/destination-marrakech.jpg'
   },
   {
     id: 3,
     name: 'Tuscany, Italy',
     activities: '18 activities',
-    image: 'https://images.unsplash.com/photo-1463319611694-4bf9eb5a6e72?auto=format&fit=crop&q=80&w=800'
+    image: '/assets/images/destination-tuscany.jpg'
   },
   {
     id: 4,
     name: 'Jaipur, India',
     activities: '14 activities',
-    image: 'https://images.unsplash.com/photo-1605649487212-4dcf0175b5b9?auto=format&fit=crop&q=80&w=800'
+    image: '/assets/images/destination-jaipur.jpg'
   }
 ];
 

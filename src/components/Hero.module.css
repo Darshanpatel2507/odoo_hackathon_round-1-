@@ -14,7 +14,7 @@
   left: 0;
   right: 0;
   bottom: -10%;
-  background-image: url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2000');
+  background-image: url('/assets/images/hero-coastal-sunset.jpg');
   background-size: cover;
   background-position: center;
   z-index: -2;

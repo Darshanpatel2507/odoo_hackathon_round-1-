@@ -3,12 +3,12 @@ import { Mail } from 'lucide-react';
 import styles from './TemplatesAndCTA.module.css';
 
 const templates = [
-  { id: 1, title: 'European Highlights', meta: '4 Cities', image: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=400' },
-  { id: 2, title: 'Morocco Explorer', meta: '3 Cities', image: 'https://images.unsplash.com/photo-1597212618440-806262de4f6b?auto=format&fit=crop&q=80&w=400' },
-  { id: 3, title: 'Italian Classics', meta: '4 Cities', image: 'https://images.unsplash.com/photo-1516483638261-f4085ee20d8f?auto=format&fit=crop&q=80&w=400' },
-  { id: 4, title: 'India Golden Triangle', meta: '3 Cities', image: 'https://images.unsplash.com/photo-1605649487212-4dcf0175b5b9?auto=format&fit=crop&q=80&w=400' },
-  { id: 5, title: 'Greek Island Hopper', meta: '3 Cities', image: 'https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?auto=format&fit=crop&q=80&w=400' },
-  { id: 6, title: 'Balkan Road Trip', meta: '4 Cities', image: 'https://images.unsplash.com/photo-1555990204-de15668d277d?auto=format&fit=crop&q=80&w=400' }
+  { id: 1, title: 'European Highlights', meta: '4 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=European+Highlights' },
+  { id: 2, title: 'Morocco Explorer', meta: '3 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=Morocco+Explorer' },
+  { id: 3, title: 'Italian Classics', meta: '4 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=Italian+Classics' },
+  { id: 4, title: 'India Golden Triangle', meta: '3 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=India+Golden+Triangle' },
+  { id: 5, title: 'Greek Island Hopper', meta: '3 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=Greek+Island+Hopper' },
+  { id: 6, title: 'Balkan Road Trip', meta: '4 Cities', image: 'https://placehold.co/500x340/FDF8F0/C1502E?text=Balkan+Road+Trip' }
 ];
 
 export default function TemplatesAndCTA() {

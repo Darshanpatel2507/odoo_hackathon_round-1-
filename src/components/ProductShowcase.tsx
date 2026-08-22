@@ -76,7 +76,7 @@ export default function ProductShowcase() {
                       <p>Colosseum Tour</p>
                       <p>Testaccio Food Walk</p>
                     </div>
-                    <div className={styles.dayImage} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=200&q=80)'}} />
+                    <div className={styles.dayImage} style={{backgroundImage: 'url(/assets/images/showcase-rome.jpg)'}} />
                   </div>
                   <div className={styles.dayCard}>
                     <div className={styles.dayNumber}>2</div>
@@ -85,7 +85,7 @@ export default function ProductShowcase() {
                       <p>Uffizi Gallery</p>
                       <p>Tuscany Wine Experience</p>
                     </div>
-                    <div className={styles.dayImage} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?w=200&q=80)'}} />
+                    <div className={styles.dayImage} style={{backgroundImage: 'url(/assets/images/showcase-florence.jpg)'}} />
                   </div>
                   <div className={styles.dayCard}>
                     <div className={styles.dayNumber}>3</div>
@@ -94,7 +94,16 @@ export default function ProductShowcase() {
                       <p>Positano Exploration</p>
                       <p>Boat Day to Capri</p>
                     </div>
-                    <div className={styles.dayImage} style={{backgroundImage: 'url(https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=200&q=80)'}} />
+                    <div className={styles.dayImage} style={{backgroundImage: 'url(/assets/images/showcase-amalfi.jpg)'}} />
+                  </div>
+                  <div className={styles.dayCard}>
+                    <div className={styles.dayNumber}>4</div>
+                    <div className={styles.dayContent}>
+                      <h4>Day 10-14 • Venice</h4>
+                      <p>St. Mark's Basilica</p>
+                      <p>Gondola Ride</p>
+                    </div>
+                    <div className={styles.dayImage} style={{backgroundImage: 'url(/assets/images/showcase-venice.jpg)'}} />
                   </div>
                 </div>
                 

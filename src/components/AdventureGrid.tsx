@@ -7,35 +7,35 @@ const adventures = [
     id: 1,
     title: 'Desert Safari',
     icon: <Camera size={20} />,
-    image: 'https://images.unsplash.com/photo-1547432426-f76239401764?auto=format&fit=crop&q=80&w=800',
+    image: '/assets/images/adventure-desert-safari.jpg',
     className: styles.largeTile
   },
   {
     id: 2,
     title: 'Hiking',
     icon: <Mountain size={20} />,
-    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&q=80&w=800',
+    image: '/assets/images/adventure-hiking.jpg',
     className: styles.smallTile
   },
   {
     id: 3,
     title: 'Food Tour',
     icon: <Utensils size={20} />,
-    image: 'https://images.unsplash.com/photo-1548943487-a2e4e43b4859?auto=format&fit=crop&q=80&w=800',
+    image: '/assets/images/adventure-food-tour.jpg',
     className: styles.smallTile
   },
   {
     id: 4,
     title: 'Museum',
     icon: <Building size={20} />,
-    image: 'https://images.unsplash.com/photo-1564399580075-5bfc198b9eb9?auto=format&fit=crop&q=80&w=800',
+    image: 'https://placehold.co/800x600/FDF8F0/C1502E?text=Museum',
     className: styles.smallTile
   },
   {
     id: 5,
     title: 'Hot Air Balloon',
     icon: <Cloud size={20} />,
-    image: 'https://images.unsplash.com/photo-1517454045558-b118b622c8cb?auto=format&fit=crop&q=80&w=800',
+    image: 'https://placehold.co/800x600/FDF8F0/C1502E?text=Hot+Air+Balloon',
     className: styles.smallTile
   }
 ];
