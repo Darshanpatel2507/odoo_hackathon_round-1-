@@ -46,18 +46,19 @@ export default function Navbar() {
           </div>
           
           <div className={styles.actionsContainer}>
-            <Link to="/dashboard" className={styles.dashboardHighlightBtn}>
-              <LayoutDashboard size={18} />
-              <span>Dashboard</span>
-            </Link>
-
             {session ? (
-              <button 
-                onClick={signOut} 
-                className={styles.loginBtn}
-              >
-                Sign Out
-              </button>
+              <>
+                <Link to="/dashboard" className={styles.dashboardHighlightBtn}>
+                  <LayoutDashboard size={18} />
+                  <span>Dashboard</span>
+                </Link>
+                <button 
+                  onClick={signOut} 
+                  className={styles.loginBtn}
+                >
+                  Sign Out
+                </button>
+              </>
             ) : (
               <>
                 <button 
