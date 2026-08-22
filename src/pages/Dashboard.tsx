@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Compass, MapPin, Wallet, Activity, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check, FileText
+  Sparkles, Check, FileText, Shield, FileCheck, ChevronRight,
+  Ticket, Download, Trash2, Upload, X
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,8 @@ export interface Note {
   trip_name: string;
   content: string;
   created_at: string;
+}
+
 interface DocumentItem {
   id: string;
   name: string;
