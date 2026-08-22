@@ -1,0 +1,230 @@
+.container {
+  padding: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--color-text);
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  color: var(--color-gray-600);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Filter Bar */
+.filterBar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--color-gray-200);
+  padding-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--color-gray-300);
+  color: var(--color-gray-600);
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterBtn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-text);
+}
+
+.filterBtn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-gray-300);
+  text-align: center;
+}
+
+.emptyState h3 {
+  margin: 16px 0 8px 0;
+  color: var(--color-text);
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+}
+
+.emptyState p {
+  color: var(--color-gray-600);
+  margin: 0;
+}
+
+/* Trips Grid */
+.tripsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
+}
+
+.tripCard {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-gray-100);
+}
+
+.tripCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.imageWrapper {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+.tripImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(4px);
+}
+
+.statusBadge.ongoing {
+  background: rgba(193, 80, 46, 0.9);
+  color: white;
+}
+
+.statusBadge.upcoming {
+  background: rgba(232, 163, 61, 0.9);
+  color: white;
+}
+
+.statusBadge.completed {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-text);
+}
+
+.tripContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.tripTitle {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin: 0 0 16px 0;
+}
+
+.tripDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-gray-600);
+  font-size: 0.9rem;
+}
+
+.detailIcon {
+  color: var(--color-primary);
+}
+
+.progressSection {
+  margin-bottom: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--color-gray-200);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  border-radius: 3px;
+}
+
+.viewBtn {
+  margin-top: auto;
+  width: 100%;
+  background: var(--color-background);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.viewBtn:hover {
+  background: var(--color-primary);
+  color: white;
+}
