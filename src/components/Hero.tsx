@@ -46,7 +46,7 @@ export default function Hero() {
             Plan Every Stop of Your Next Adventure.
           </motion.h1>
           <motion.p variants={itemVariants} className={`${styles.subheadline} script-font`}>
-            Multi-city trips, one simple plan.
+            Multi-city trips, one single plan.
           </motion.p>
           
           <motion.div variants={itemVariants} className={styles.searchCard}>

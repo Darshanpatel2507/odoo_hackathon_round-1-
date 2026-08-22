@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Compass } from 'lucide-react';
+import { Compass, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AuthModal from './AuthModal';
@@ -10,11 +10,11 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const { session } = useAuth();
+  const { session, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 30);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -31,11 +31,11 @@ export default function Navbar() {
         className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
       >
         <div className={styles.container}>
-          <Link to="/" className={styles.logoContainer} style={{ textDecoration: 'none' }}>
-            <Compass className={styles.logoIcon} size={32} />
+          <Link to="/" className={styles.logoContainer}>
+            <Compass className={styles.logoIcon} size={30} />
             <span className={styles.logoText}>GlobeTrotter</span>
           </Link>
           
@@ -46,12 +46,32 @@ export default function Navbar() {
           </div>
           
           <div className={styles.actionsContainer}>
+            <Link to="/dashboard" className={styles.dashboardHighlightBtn}>
+              <LayoutDashboard size={18} />
+              <span>Dashboard</span>
+            </Link>
+
             {session ? (
-              <Link to="/dashboard" className={styles.loginBtn} style={{ textDecoration: 'none' }}>Dashboard</Link>
+              <button 
+                onClick={signOut} 
+                className={styles.loginBtn}
+              >
+                Sign Out
+              </button>
             ) : (
               <>
-                <button onClick={() => openAuth('login')} className={styles.loginBtn} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>Log In</button>
-                <button onClick={() => openAuth('signup')} className={styles.signupBtn} style={{ border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>Sign Up Free</button>
+                <button 
+                  onClick={() => openAuth('login')} 
+                  className={styles.loginBtn}
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={() => openAuth('signup')} 
+                  className={styles.signupBtn}
+                >
+                  Sign Up Free
+                </button>
               </>
             )}
           </div>
@@ -66,3 +86,4 @@ export default function Navbar() {
     </>
   );
 }
+

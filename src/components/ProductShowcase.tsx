@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Compass, Map, Wallet, Activity, BookOpen, Folder, Settings, Bell, MapPin } from 'lucide-react';
+import { Compass, LayoutDashboard, MapPin, Wallet, Activity, BookOpen, Folder, Settings, Bell } from 'lucide-react';
 import styles from './ProductShowcase.module.css';
 
 export default function ProductShowcase() {
@@ -25,7 +25,7 @@ export default function ProductShowcase() {
               <span className={styles.controlMax} />
             </div>
             <div className={styles.addressBar}>
-              globetrotter.app/itinerary
+              globetrotter.app/dashboard
             </div>
             <div className={styles.browserActions}>
               <div className={styles.mockupAction} />
@@ -42,7 +42,7 @@ export default function ProductShowcase() {
                 <span>GlobeTrotter</span>
               </div>
               <div className={styles.sidebarNav}>
-                <div className={`${styles.navItem} ${styles.active}`}><Map size={18} /> Itinerary</div>
+                <div className={`${styles.navItem} ${styles.active}`}><LayoutDashboard size={18} /> Dashboard</div>
                 <div className={styles.navItem}><MapPin size={18} /> Map</div>
                 <div className={styles.navItem}><Wallet size={18} /> Budget</div>
                 <div className={styles.navItem}><Activity size={18} /> Activities</div>
