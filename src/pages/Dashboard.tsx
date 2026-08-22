@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Compass, LayoutDashboard, MapPin, Wallet, Activity, BookOpen, 
+  Compass, MapPin, Wallet, Activity, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check
+  Sparkles, Check, FileText
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import styles from './Dashboard.module.css';
 
-type TabType = 'dashboard' | 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
+type TabType = 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
 
 interface DayPlan {
   id: number;
@@ -20,6 +21,13 @@ interface DayPlan {
   activities: string[];
   image: string;
   coordinates: { x: number; y: number };
+}
+
+export interface Note {
+  id: string;
+  trip_name: string;
+  content: string;
+  created_at: string;
 }
 
 const initialTripDays: DayPlan[] = [
@@ -95,12 +103,76 @@ const aiSuggestionsList = [
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
-  const [selectedDay, setSelectedDay] = useState<number | null>(1);
+  const [activeTab, setActiveTab] = useState<TabType>('notes');
   const [showAiModal, setShowAiModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState(2);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [completedActivities, setCompletedActivities] = useState<string[]>(['Colosseum Tour']);
+
+  // Notes state
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [showAddNoteModal, setShowAddNoteModal] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [newNoteForm, setNewNoteForm] = useState({ trip_name: '', content: '' });
+  const [isNotesLoading, setIsNotesLoading] = useState(false);
+
+  useEffect(() => {
+    if (user && activeTab === 'notes') {
+      fetchNotes();
+    }
+  }, [user, activeTab]);
+
+  const fetchNotes = async () => {
+    setIsNotesLoading(true);
+    const { data, error } = await supabase
+      .from('notes')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      if (data.length === 0) {
+        // Insert dummy note
+        const dummyNote = {
+          user_id: user?.id,
+          trip_name: 'Italy Adventure',
+          content: 'Packing Essentials:\n- Universal EU power adapters\n- Comfortable walking shoes for cobblestones\n- Modest clothing for Basilica visits (shoulders & knees covered)\n\nRestaurant Bookings:\n- Roscioli Salumeria (Rome) - May 21, 8:30 PM\n- Trattoria Cammillo (Florence) - May 24, 7:45 PM'
+        };
+        const { data: insertedData, error: insertError } = await supabase
+          .from('notes')
+          .insert([dummyNote])
+          .select();
+        
+        if (!insertError && insertedData) {
+          setNotes(insertedData);
+        }
+      } else {
+        setNotes(data);
+      }
+    }
+    setIsNotesLoading(false);
+  };
+
+  const handleSaveNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNoteForm.trip_name || !newNoteForm.content || !user) return;
+
+    const { data, error } = await supabase
+      .from('notes')
+      .insert([
+        { 
+          user_id: user.id, 
+          trip_name: newNoteForm.trip_name, 
+          content: newNoteForm.content 
+        }
+      ])
+      .select();
+
+    if (!error && data) {
+      setNotes([data[0], ...notes]);
+      setShowAddNoteModal(false);
+      setNewNoteForm({ trip_name: '', content: '' });
+    }
+  };
 
   const handleLogout = async () => {
     navigate('/');
@@ -128,13 +200,6 @@ export default function Dashboard() {
           </Link>
 
           <nav className={styles.sidebarNav}>
-            <button 
-              className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <LayoutDashboard size={19} />
-              <span>Dashboard</span>
-            </button>
             <button 
               className={`${styles.navItem} ${activeTab === 'map' ? styles.active : ''}`}
               onClick={() => setActiveTab('map')}
@@ -244,154 +309,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Dynamic Tab Views */}
-        {activeTab === 'dashboard' && (
-          <div className={styles.contentGrid}>
-            {/* Left Column: Day by Day Plan */}
-            <section className={styles.planSection}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Day by Day Plan</h2>
-                <span className={styles.dayCounter}>{initialTripDays.length} Stops</span>
-              </div>
-
-              <div className={styles.dayList}>
-                {initialTripDays.map((day) => (
-                  <div 
-                    key={day.id} 
-                    className={`${styles.dayCard} ${selectedDay === day.id ? styles.selectedCard : ''}`}
-                    onClick={() => setSelectedDay(day.id)}
-                  >
-                    <div className={styles.dayBadge}>{day.dayBadge}</div>
-                    
-                    <div className={styles.dayDetails}>
-                      <h3 className={styles.dayCity}>{day.title}</h3>
-                      <div className={styles.activityTags}>
-                        {day.activities.slice(0, 2).map((act, idx) => (
-                          <p key={idx} className={styles.activityItem}>
-                            • {act}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div 
-                      className={styles.dayThumbnail} 
-                      style={{ backgroundImage: `url(${day.image})` }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Middle Column: Trip Map */}
-            <section className={styles.mapSection}>
-              <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Trip Map</h2>
-                <span className={styles.mapBadge}>Interactive Route</span>
-              </div>
-
-              <div className={styles.mapCanvas}>
-                {/* SVG Route Connection Lines */}
-                <svg className={styles.mapSvg} viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <path 
-                    d="M 38 30 Q 42 42 50 52 T 68 22 Q 66 50 62 78" 
-                    fill="none" 
-                    stroke="var(--color-primary)" 
-                    strokeWidth="1.8" 
-                    strokeDasharray="3 3"
-                    className={styles.animatedRoute}
-                  />
-                </svg>
-
-                {/* City Pins on Map */}
-                {initialTripDays.map((stop) => (
-                  <div 
-                    key={stop.id}
-                    className={`${styles.mapMarker} ${selectedDay === stop.id ? styles.activeMarker : ''}`}
-                    style={{ left: `${stop.coordinates.x}%`, top: `${stop.coordinates.y}%` }}
-                    onClick={() => setSelectedDay(stop.id)}
-                  >
-                    <div className={styles.pinDot}>
-                      <MapPin size={16} fill="var(--color-primary)" color="var(--color-primary)" />
-                    </div>
-                    <span className={styles.pinLabel}>{stop.city}</span>
-                  </div>
-                ))}
-
-                <div className={styles.mapFooterInfo}>
-                  <span>📍 {initialTripDays.find(d => d.id === selectedDay)?.city || 'Rome'} Highlighted</span>
-                </div>
-              </div>
-            </section>
-
-            {/* Right Column: Budget Overview & Companion */}
-            <section className={styles.budgetSection}>
-              <div className={styles.budgetCard}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>Budget Overview</h2>
-                </div>
-
-                <div className={styles.progressRow}>
-                  <span className={styles.progressLabel}>Overall Progress</span>
-                  <span className={styles.progressPercentage}>72%</span>
-                </div>
-                
-                <div className={styles.progressBar}>
-                  <motion.div 
-                    className={styles.progressFill} 
-                    initial={{ width: 0 }}
-                    animate={{ width: '72%' }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                  />
-                </div>
-
-                <div className={styles.categoryList}>
-                  <div className={styles.categoryItem}>
-                    <div className={styles.categoryIconWrap}>✈️</div>
-                    <span className={styles.categoryName}>Transport</span>
-                    <span className={styles.categoryVal}>70%</span>
-                  </div>
-
-                  <div className={styles.categoryItem}>
-                    <div className={styles.categoryIconWrap}>🎫</div>
-                    <span className={styles.categoryName}>Activities</span>
-                    <span className={styles.categoryVal}>65%</span>
-                  </div>
-
-                  <div className={styles.categoryItem}>
-                    <div className={styles.categoryIconWrap}>🍕</div>
-                    <span className={styles.categoryName}>Food</span>
-                    <span className={styles.categoryVal}>75%</span>
-                  </div>
-
-                  <div className={styles.categoryItem}>
-                    <div className={styles.categoryIconWrap}>🏨</div>
-                    <span className={styles.categoryName}>Stays</span>
-                    <span className={styles.categoryVal}>80%</span>
-                  </div>
-                </div>
-
-                {/* Travel Companion Box */}
-                <div className={styles.companionBox}>
-                  <div className={styles.companionHeader}>
-                    <Sparkles size={18} color="var(--color-primary)" />
-                    <h3 className={styles.companionTitle}>Travel Companion</h3>
-                  </div>
-                  <p className={styles.companionDesc}>
-                    Let our AI suggest the best experiences and hidden gems for your trip.
-                  </p>
-                  <button 
-                    className={styles.suggestBtn}
-                    onClick={() => setShowAiModal(true)}
-                  >
-                    Get Suggestions
-                  </button>
-                </div>
-              </div>
-            </section>
-          </div>
-        )}
-
         {/* Map Tab View */}
         {activeTab === 'map' && (
           <div className={styles.fullscreenView}>
@@ -475,20 +392,37 @@ export default function Dashboard() {
         {/* Notes Tab View */}
         {activeTab === 'notes' && (
           <div className={styles.fullscreenView}>
-            <h2 className={styles.viewHeading}>Trip Notes & Packing Checklist</h2>
-            <div className={styles.notesContainer}>
-              <div className={styles.noteBox}>
-                <h3>Packing Essentials</h3>
-                <p>• Universal EU power adapters</p>
-                <p>• Comfortable walking shoes for cobblestones</p>
-                <p>• Modest clothing for Basilica visits (shoulders & knees covered)</p>
-              </div>
-              <div className={styles.noteBox}>
-                <h3>Restaurant Bookings</h3>
-                <p>• Roscioli Salumeria (Rome) - May 21, 8:30 PM</p>
-                <p>• Trattoria Cammillo (Florence) - May 24, 7:45 PM</p>
-              </div>
+            <div className={styles.notesHeaderFlex}>
+              <h2 className={styles.viewHeading}>Trip Notes</h2>
+              <button className={styles.actionBtnPrimary} onClick={() => setShowAddNoteModal(true)}>
+                <Plus size={16} />
+                <span>Add Note</span>
+              </button>
             </div>
+            
+            {isNotesLoading ? (
+              <p>Loading notes...</p>
+            ) : (
+              <div className={styles.notesContainer}>
+                {notes.map((note) => (
+                  <div 
+                    key={note.id} 
+                    className={styles.noteBox}
+                    onClick={() => setSelectedNote(note)}
+                  >
+                    <div className={styles.noteBoxHeader}>
+                      <FileText size={18} color="var(--color-primary)" />
+                      <h3>{note.trip_name}</h3>
+                    </div>
+                    <p className={styles.notePreview}>{note.content}</p>
+                    <span className={styles.noteDate}>
+                      {new Date(note.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                ))}
+                {notes.length === 0 && <p>No notes found. Create one!</p>}
+              </div>
+            )}
           </div>
         )}
 
@@ -578,6 +512,88 @@ export default function Dashboard() {
                     </button>
                   </div>
                 ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Add Note Modal */}
+      <AnimatePresence>
+        {showAddNoteModal && (
+          <div className={styles.modalOverlay} onClick={() => setShowAddNoteModal(false)}>
+            <motion.div 
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            >
+              <div className={styles.modalHeader}>
+                <div className={styles.modalTitle}>
+                  <FileText size={20} color="var(--color-primary)" />
+                  <h3>Add New Note</h3>
+                </div>
+                <button className={styles.closeBtn} onClick={() => setShowAddNoteModal(false)}>✕</button>
+              </div>
+
+              <form onSubmit={handleSaveNote} className={styles.addNoteForm}>
+                <div className={styles.formGroup}>
+                  <label>Trip / Tour Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g., Paris Summer 2026"
+                    value={newNoteForm.trip_name}
+                    onChange={(e) => setNewNoteForm({...newNoteForm, trip_name: e.target.value})}
+                    required 
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Note Content</label>
+                  <textarea 
+                    rows={6}
+                    placeholder="Write your notes, itineraries, or packing lists here..."
+                    value={newNoteForm.content}
+                    onChange={(e) => setNewNoteForm({...newNoteForm, content: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className={styles.formActions}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setShowAddNoteModal(false)}>Cancel</button>
+                  <button type="submit" className={styles.submitBtn}>Save Note</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* View Note Modal */}
+      <AnimatePresence>
+        {selectedNote && (
+          <div className={styles.modalOverlay} onClick={() => setSelectedNote(null)}>
+            <motion.div 
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            >
+              <div className={styles.modalHeader}>
+                <div className={styles.modalTitle}>
+                  <FileText size={20} color="var(--color-primary)" />
+                  <h3>{selectedNote.trip_name}</h3>
+                </div>
+                <button className={styles.closeBtn} onClick={() => setSelectedNote(null)}>✕</button>
+              </div>
+
+              <div className={styles.viewNoteContent}>
+                {selectedNote.content.split('\n').map((line, i) => (
+                  <p key={i} style={{ minHeight: '1.2em', margin: '4px 0' }}>{line}</p>
+                ))}
+              </div>
+              <div className={styles.viewNoteFooter}>
+                Added on {new Date(selectedNote.created_at).toLocaleDateString()}
               </div>
             </motion.div>
           </div>

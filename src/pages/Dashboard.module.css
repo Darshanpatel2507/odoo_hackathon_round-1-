@@ -811,23 +811,66 @@
   gap: 24px;
 }
 
+.notesHeaderFlex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.notesHeaderFlex .viewHeading {
+  margin-bottom: 0;
+}
+
 .noteBox {
   background-color: #FAF4EC;
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #EBE0D2;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.noteBox:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(58, 42, 30, 0.08);
+  border-color: #D5C7BA;
+}
+
+.noteBoxHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .noteBox h3 {
   font-family: var(--font-sans);
   font-size: 1.1rem;
-  margin-bottom: 12px;
+  margin: 0;
+  color: #231712;
 }
 
-.noteBox p {
+.notePreview {
   font-size: 0.88rem;
   color: #554438;
   margin: 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.noteDate {
+  font-size: 0.75rem;
+  color: #A89B8F;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #EBE0D2;
 }
 
 .documentsGrid {
@@ -1051,4 +1094,75 @@
   .mainCanvas {
     padding: 24px 16px;
   }
+}
+
+/* Notes Modal Forms */
+.addNoteForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.addNoteForm textarea {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #D5C7BA;
+  background-color: #FAF4EC;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid #D5C7BA;
+  color: #554438;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cancelBtn:hover {
+  background-color: #EBE0D2;
+}
+
+.submitBtn {
+  background: var(--color-primary);
+  border: none;
+  color: #FFFFFF;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(193, 80, 46, 0.25);
+}
+
+.submitBtn:hover {
+  background: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.viewNoteContent {
+  color: #3A2A1E;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.viewNoteFooter {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #EBE0D2;
+  font-size: 0.8rem;
+  color: #A89B8F;
 }
