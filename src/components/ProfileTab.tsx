@@ -17,7 +17,6 @@ export default function ProfileTab() {
   useEffect(() => {
     const savedName = localStorage.getItem('profile_name');
     const savedAvatar = localStorage.getItem('profile_avatar');
-    const savedTrips = localStorage.getItem('profile_past_trips');
 
     if (savedName) setName(savedName);
     if (savedAvatar) setAvatarUrl(savedAvatar);

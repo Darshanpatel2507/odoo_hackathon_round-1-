@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Compass, LayoutDashboard, Briefcase, MapPin, Wallet, Activity, BookOpen, 
+  Compass, Briefcase, MapPin, Wallet, BookOpen, 
   Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check, User
-  Compass, MapPin, Wallet, Activity, BookOpen, 
-  Folder, Settings, Bell, Plus, Share2, LogOut, ArrowLeft,
-  Sparkles, Check, FileText
+  Sparkles, Check, FileText, Shield, FileCheck, ChevronRight,
+  Ticket, Download, Trash2, Upload, X
 } from 'lucide-react';
 import ProfileTab from '../components/ProfileTab';
 import MyTripsTab, { type Trip } from '../components/MyTripsTab';
@@ -16,7 +14,6 @@ import { supabase } from '../lib/supabase';
 import styles from './Dashboard.module.css';
 
 type TabType = 'dashboard' | 'my-trips' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings' | 'profile';
-type TabType = 'map' | 'budget' | 'activities' | 'notes' | 'documents' | 'settings';
 
 interface Expense {
   id: string;
@@ -25,17 +22,14 @@ interface Expense {
   category: string;
 }
 
-interface Destination {
-  id: string;
-  name: string;
-  budgetLimit: number;
-  expenses: Expense[];
-}
 
 interface Tour {
   id: string;
   title: string;
-  destinations: Destination[];
+  location: string;
+  image_url?: string;
+  budgetLimit?: number;
+  expenses?: Expense[];
 }
 
 interface DayPlan {
@@ -51,11 +45,15 @@ interface DayPlan {
 
 export interface Note {
   id: string;
-  trip_name: string;
+  trip_id?: string;
+  trip_name?: string;
   content: string;
   created_at: string;
+}
+
 interface DocumentItem {
   id: string;
+  trip_id?: string;
   name: string;
   category: 'Transit' | 'Hotel' | 'Activity' | 'Identity' | 'Insurance' | 'Other';
   fileType: 'PDF' | 'Ticket' | 'Image';
@@ -116,125 +114,7 @@ const initialTripDays: DayPlan[] = [
   }
 ];
 
-const initialAdventureFolders: AdventureFolder[] = [
-  {
-    id: 'italy',
-    title: 'Italy Adventure',
-    subtitle: 'Rome • Florence • Venice • Amalfi Coast',
-    image: '/assets/images/showcase-rome.jpg',
-    tag: 'Europe',
-    documents: [
-      {
-        id: 'doc-it-1',
-        name: 'EU Rail Pass - Frecciarossa High-Speed',
-        category: 'Transit',
-        fileType: 'PDF',
-        fileSize: '1.4 MB',
-        uploadedAt: 'May 18, 2026',
-        notes: 'Coach 4, Seat 21A & 21B'
-      },
-      {
-        id: 'doc-it-2',
-        name: 'Rome Boutique Hotel Voucher & Check-in',
-        category: 'Hotel',
-        fileType: 'PDF',
-        fileSize: '2.1 MB',
-        uploadedAt: 'May 19, 2026',
-        notes: 'Check-in: 02:00 PM'
-      },
-      {
-        id: 'doc-it-3',
-        name: 'Colosseum VIP Guided Tour Tickets',
-        category: 'Activity',
-        fileType: 'Ticket',
-        fileSize: '850 KB',
-        uploadedAt: 'May 20, 2026',
-        notes: 'Priority Gladiator Arena Gate'
-      },
-      {
-        id: 'doc-it-4',
-        name: 'International Travel Health Insurance',
-        category: 'Insurance',
-        fileType: 'PDF',
-        fileSize: '3.2 MB',
-        uploadedAt: 'May 15, 2026',
-        notes: 'Policy #GLB-IT-99201'
-      }
-    ]
-  },
-  {
-    id: 'switzerland',
-    title: 'Switzerland Adventure',
-    subtitle: 'Zurich • Interlaken • Zermatt • Lucerne',
-    image: '/assets/images/template-european-highlights.jpg',
-    tag: 'Alps',
-    documents: [
-      {
-        id: 'doc-ch-1',
-        name: 'Swiss Travel Pass Consecutive 8-Day Pass',
-        category: 'Transit',
-        fileType: 'PDF',
-        fileSize: '1.8 MB',
-        uploadedAt: 'Jun 10, 2026',
-        notes: 'Valid across all SBB trains & mountain boats'
-      },
-      {
-        id: 'doc-ch-2',
-        name: 'Jungfraujoch Top of Europe Mountain Rail Pass',
-        category: 'Activity',
-        fileType: 'Ticket',
-        fileSize: '920 KB',
-        uploadedAt: 'Jun 12, 2026',
-        notes: 'Eiger Express cable car included'
-      },
-      {
-        id: 'doc-ch-3',
-        name: 'Zermatt Matterhorn Chalet Reservation',
-        category: 'Hotel',
-        fileType: 'PDF',
-        fileSize: '2.4 MB',
-        uploadedAt: 'Jun 14, 2026',
-        notes: 'Balcony with direct Matterhorn view'
-      }
-    ]
-  },
-  {
-    id: 'vadodara',
-    title: 'Vadodara Adventure',
-    subtitle: 'Laxmi Vilas • Sayaji Baug • Statue of Unity • Champaner',
-    image: '/assets/images/template-india-golden-triangle.jpg',
-    tag: 'Heritage',
-    documents: [
-      {
-        id: 'doc-vd-1',
-        name: 'IndiGo Flight Confirmation (DEL → BDQ)',
-        category: 'Transit',
-        fileType: 'PDF',
-        fileSize: '1.1 MB',
-        uploadedAt: 'Jul 02, 2026',
-        notes: 'Flight 6E-2419 • Terminal 1'
-      },
-      {
-        id: 'doc-vd-2',
-        name: 'Laxmi Vilas Palace Royal Heritage Pass',
-        category: 'Activity',
-        fileType: 'Ticket',
-        fileSize: '780 KB',
-        uploadedAt: 'Jul 04, 2026',
-        notes: 'Includes Audio Guide & Maharaja Fatehsingh Museum'
-      },
-      {
-        id: 'doc-vd-3',
-        name: 'Grand Mercure Vadodara Surya Palace Stay',
-        category: 'Hotel',
-        fileType: 'PDF',
-        fileSize: '1.9 MB',
-        uploadedAt: 'Jul 03, 2026',
-        notes: 'Deluxe Suite • Breakfast Included'
-      }
-    ]
-  }
-];
+
 
 const aiSuggestionsList = [
   {
@@ -267,6 +147,8 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('notes');
+  const [selectedDay, setSelectedDay] = useState<number | null>(1);
+  const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
   const [showAiModal, setShowAiModal] = useState(false);
   const [notificationCount, setNotificationCount] = useState(2);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
@@ -280,10 +162,60 @@ export default function Dashboard() {
   const [isNotesLoading, setIsNotesLoading] = useState(false);
 
   useEffect(() => {
-    if (user && activeTab === 'notes') {
-      fetchNotes();
+    if (user) {
+      fetchTripsData();
+      if (activeTab === 'notes') fetchNotes();
     }
   }, [user, activeTab]);
+
+  const fetchTripsData = async () => {
+    const { data: tripsData, error: tripsError } = await supabase
+      .from('trips')
+      .select('*')
+      .eq('user_id', user?.id || '');
+      
+    if (!tripsError && tripsData) {
+      const { data: expensesData } = await supabase
+        .from('expenses')
+        .select('*');
+        
+      const { data: docsData } = await supabase
+        .from('documents')
+        .select('*');
+
+      const toursData: Tour[] = tripsData.map(t => ({
+        id: t.id,
+        title: t.title,
+        location: t.location,
+        budgetLimit: (t as any).budget_limit || 0,
+        expenses: (expensesData?.filter(e => (e as any).trip_id === t.id) || []) as Expense[]
+      }));
+      setTours(toursData);
+      
+      const folders = tripsData.map(t => {
+        const tripDocs = (docsData?.filter(d => (d as any).trip_id === t.id) || []).map((d: any) => ({
+          id: d.id,
+          trip_id: d.trip_id,
+          name: d.file_name || d.name,
+          category: d.category || 'Other',
+          fileType: d.file_type || 'PDF',
+          fileSize: d.file_size || '1.2 MB',
+          uploadedAt: d.created_at ? new Date(d.created_at).toLocaleDateString() : 'Today',
+          notes: d.notes
+        })) as DocumentItem[];
+        
+        return {
+          id: t.id,
+          title: t.title,
+          subtitle: t.location,
+          image: (t as any).image_url || '/assets/images/showcase-rome.jpg',
+          tag: 'Trip Vault',
+          documents: tripDocs
+        };
+      });
+      setAdventureFolders(folders);
+    }
+  };
 
   const fetchNotes = async () => {
     setIsNotesLoading(true);
@@ -296,13 +228,14 @@ export default function Dashboard() {
       if (data.length === 0) {
         // Insert dummy note
         const dummyNote = {
-          user_id: user?.id,
+          user_id: user?.id || '',
+          trip_id: 'default',
           trip_name: 'Italy Adventure',
           content: 'Packing Essentials:\n- Universal EU power adapters\n- Comfortable walking shoes for cobblestones\n- Modest clothing for Basilica visits (shoulders & knees covered)\n\nRestaurant Bookings:\n- Roscioli Salumeria (Rome) - May 21, 8:30 PM\n- Trattoria Cammillo (Florence) - May 24, 7:45 PM'
         };
         const { data: insertedData, error: insertError } = await supabase
           .from('notes')
-          .insert([dummyNote])
+          .insert([dummyNote as any])
           .select();
         
         if (!insertError && insertedData) {
@@ -323,10 +256,11 @@ export default function Dashboard() {
       .from('notes')
       .insert([
         { 
-          user_id: user.id, 
+          user_id: user?.id || '', 
+          trip_id: 'default', 
           trip_name: newNoteForm.trip_name, 
           content: newNoteForm.content 
-        }
+        } as any
       ])
       .select();
 
@@ -336,93 +270,44 @@ export default function Dashboard() {
       setNewNoteForm({ trip_name: '', content: '' });
     }
   };
-  const [tours, setTours] = useState<Tour[]>([
-    {
-      id: 't1',
-      title: 'Italy Adventure',
-      destinations: [
-        {
-          id: 'd1',
-          name: 'Rome',
-          budgetLimit: 1500,
-          expenses: [
-            { id: 'e1', description: 'Colosseum Tickets', amount: 50, category: 'Activities' },
-            { id: 'e2', description: 'Dinner at Trastevere', amount: 80, category: 'Food' }
-          ]
-        },
-        {
-          id: 'd2',
-          name: 'Florence',
-          budgetLimit: 1200,
-          expenses: [
-            { id: 'e3', description: 'Train to Florence', amount: 45, category: 'Transport' },
-            { id: 'e4', description: 'Uffizi Gallery', amount: 35, category: 'Activities' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 't2',
-      title: 'France Getaway',
-      destinations: [
-        {
-          id: 'd3',
-          name: 'Paris',
-          budgetLimit: 2000,
-          expenses: [
-            { id: 'e5', description: 'Eiffel Tower', amount: 30, category: 'Activities' },
-            { id: 'e6', description: 'Hotel Stay', amount: 500, category: 'Stays' }
-          ]
-        }
-      ]
-    }
-  ]);
+  const [tours, setTours] = useState<Tour[]>([]);
+
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [selectedBudgetTrip, setSelectedBudgetTrip] = useState<any>(null);
 
   const [expenseForm, setExpenseForm] = useState<{
-    tourId: string;
-    destinationId: string;
+    tripId: string;
     description: string;
-    amount: string;
+    amount: number;
     category: string;
-  } | null>(null);
+  }>({ tripId: '', description: '', amount: 0, category: 'Food' });
 
-  const handleAddExpenseSubmit = () => {
-    if (!expenseForm || !expenseForm.description || !expenseForm.amount) return;
+  const handleAddExpenseSubmit = async () => {
+    if (!expenseForm.tripId || !expenseForm.description || !expenseForm.amount) return;
     
-    setTours(prevTours => prevTours.map(tour => {
-      if (tour.id === expenseForm.tourId) {
-        return {
-          ...tour,
-          destinations: tour.destinations.map(dest => {
-            if (dest.id === expenseForm.destinationId) {
-              return {
-                ...dest,
-                expenses: [...dest.expenses, {
-                  id: Date.now().toString(),
-                  description: expenseForm.description,
-                  amount: parseFloat(expenseForm.amount),
-                  category: expenseForm.category || 'Other'
-                }]
-              };
-            }
-            return dest;
-          })
-        };
-      }
-      return tour;
-    }));
-    
-    setExpenseForm(null);
-  };
+    const { data, error } = await supabase
+      .from('expenses')
+      .insert([
+        {
+          trip_id: expenseForm.tripId,
+          description: expenseForm.description,
+          amount: expenseForm.amount,
+          category: expenseForm.category
+        } as any
+      ])
+      .select() as any;
 
-  const handleSaveBudget = () => {
-    const confirmSave = window.confirm("Are you sure you want to save this budget? Please review all the details before confirming.");
-    if (confirmSave) {
-      alert("Budget successfully saved!");
+    if (!error && data) {
+      // Refresh or fetchAllData here
+      setExpenseForm({ tripId: selectedBudgetTrip?.id || '', description: '', amount: 0, category: 'Food' });
     }
   };
+
+  
+
+  
   // Document Section States
-  const [adventureFolders, setAdventureFolders] = useState<AdventureFolder[]>(initialAdventureFolders);
+  const [adventureFolders, setAdventureFolders] = useState<AdventureFolder[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [showAddDocModal, setShowAddDocModal] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState('');
@@ -451,36 +336,50 @@ export default function Dashboard() {
     e.preventDefault();
     if (!newDocTitle.trim() || !selectedFolderId) return;
 
-    const newDoc: DocumentItem = {
-      id: `doc-${Date.now()}`,
-      name: newDocTitle.trim(),
-      category: newDocCategory,
-      fileType: newDocType,
-      fileSize: `${(Math.random() * 2 + 0.5).toFixed(1)} MB`,
-      uploadedAt: 'Today',
-      notes: newDocNotes.trim() || undefined
-    };
-
-    setAdventureFolders(prev => prev.map(folder => {
-      if (folder.id === selectedFolderId) {
-        return {
-          ...folder,
-          documents: [newDoc, ...folder.documents]
-        };
+    const uploadDoc = async () => {
+      const { data, error } = await supabase.from('documents').insert([
+        {
+          user_id: user?.id || '',
+          trip_id: selectedFolderId,
+          file_name: newDocTitle.trim(),
+          file_url: 'placeholder_url',
+          category: newDocCategory,
+          notes: newDocNotes.trim()
+        } as any
+      ]).select();
+      
+      if (!error && data) {
+        const docData = data[0] as any;
+        const newDoc: DocumentItem = {
+          id: docData.id,
+          name: docData.file_name || docData.name,
+          category: (docData.category as any) || 'Transit',
+          fileType: newDocType,
+          fileSize: `1.5 MB`,
+          uploadedAt: new Date(docData.created_at || new Date()).toLocaleDateString(),
+          notes: docData.notes || undefined
+        };setAdventureFolders(prev => prev.map(folder => {
+          if (folder.id === selectedFolderId) {
+            return {
+              ...folder,
+              documents: [newDoc, ...folder.documents]
+            };
+          }
+          return folder;
+        }));
+        
+        setNewDocTitle('');
+        setNewDocCategory('Transit');
+        setNewDocType('PDF');
+        setNewDocNotes('');
+        setShowAddDocModal(false);
+        setToastMessage(`Added document!`);
+        setTimeout(() => setToastMessage(null), 3500);
+      } else {
+        alert("Error saving document!");
       }
-      return folder;
-    }));
-
-    // Reset Form
-    setNewDocTitle('');
-    setNewDocCategory('Transit');
-    setNewDocType('PDF');
-    setNewDocNotes('');
-    setShowAddDocModal(false);
-
-    // Toast
-    setToastMessage(`Added "${newDoc.name}" to documents!`);
-    setTimeout(() => setToastMessage(null), 3500);
+    };
+    uploadDoc();
   };
 
   // Delete Document Handler
@@ -511,21 +410,13 @@ export default function Dashboard() {
 
           <nav className={styles.sidebarNav}>
             <button 
-              className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <LayoutDashboard size={19} />
-              <span>Dashboard</span>
-            </button>
-            <button 
               className={`${styles.navItem} ${activeTab === 'my-trips' ? styles.active : ''}`}
               onClick={() => setActiveTab('my-trips')}
-              className={`${styles.navItem} ${activeTab === 'map' ? styles.active : ''}`}
-              onClick={() => setActiveTab('map')}
             >
               <Briefcase size={19} />
               <span>My Trips</span>
             </button>
+
             <button 
               className={`${styles.navItem} ${activeTab === 'budget' ? styles.active : ''}`}
               onClick={() => setActiveTab('budget')}
@@ -585,44 +476,17 @@ export default function Dashboard() {
       {/* Main Workspace Area */}
       <main className={styles.mainCanvas}>
         {/* Top Header */}
-        {/* Top Header (Hidden on global tabs) */}
-        {activeTab !== 'my-trips' && activeTab !== 'profile' && (
+        {/* Top Header */}
+        {activeTab === 'my-trips' && (
           <header className={styles.topHeader}>
             <div className={styles.tripHeader}>
-              <h1 className={styles.tripTitle}>{currentTrip ? currentTrip.title : 'My Workspace'}</h1>
-              <p className={styles.tripSubtitle}>{currentTrip ? `${currentTrip.dateRange} • ${currentTrip.location}` : 'Select a trip from My Trips to get started'}</p>
+              <h1 className={styles.tripTitle}>
+                {currentTrip ? currentTrip.title : 'My Workspace'}
+              </h1>
+              <p className={styles.tripSubtitle}>
+                {currentTrip ? `${currentTrip.dateRange} • ${currentTrip.location}` : 'Select a trip from My Trips to get started'}
+              </p>
             </div>
-        <header className={styles.topHeader}>
-          <div className={styles.tripHeader}>
-            <h1 className={styles.tripTitle}>
-              {activeTab === 'documents' 
-                ? 'Travel Documents' 
-                : 'Italy Adventure'}
-            </h1>
-            <p className={styles.tripSubtitle}>
-              {activeTab === 'documents'
-                ? 'Store, manage, and access boarding passes, hotel reservations, and activity tickets.'
-                : 'May 20 - June 2 • 14 Days • 4 Cities'}
-            </p>
-          </div>
-
-          <div className={styles.headerControls}>
-            <button 
-              className={styles.iconBtn}
-              onClick={() => {
-                setShowNotificationToast(!showNotificationToast);
-                setNotificationCount(0);
-              }}
-              title="Notifications"
-            >
-              <Bell size={20} />
-              {notificationCount > 0 && <span className={styles.badge}>{notificationCount}</span>}
-            </button>
-
-            <button className={styles.actionBtnSecondary} onClick={() => alert('Trip link copied to clipboard!')}>
-              <Share2 size={16} />
-              <span>Share</span>
-            </button>
 
             <div className={styles.headerControls}>
               <button 
@@ -815,10 +679,8 @@ export default function Dashboard() {
 
         {/* My Trips Tab View */}
         {activeTab === 'my-trips' && (
-        {/* Map Tab View */}
-        {activeTab === 'map' && (
           <div className={styles.fullscreenView}>
-            <MyTripsTab onOpenTrip={(trip) => {
+            <MyTripsTab trips={tours as any} onOpenTrip={(trip) => {
               setCurrentTrip(trip);
               setActiveTab('activities');
             }} />
@@ -830,98 +692,116 @@ export default function Dashboard() {
           <div className={styles.fullscreenView}>
             <div className={styles.budgetHeader}>
               <h2 className={styles.viewHeading}>Detailed Trip Budget & Expenses</h2>
-              <button className={styles.actionBtnPrimary} onClick={handleSaveBudget}>Save Budget</button>
             </div>
             
-            <div className={styles.toursList}>
+            <div className={styles.budgetGrid}>
               {tours.map(tour => {
-                const tourTotalBudget = tour.destinations.reduce((acc, d) => acc + d.budgetLimit, 0);
-                const tourTotalSpent = tour.destinations.reduce((acc, d) => 
-                  acc + d.expenses.reduce((eAcc, e) => eAcc + e.amount, 0)
-                , 0);
+                const tourTotalSpent = tour.expenses?.reduce((acc: number, e: any) => acc + e.amount, 0) || 0;
 
                 return (
-                  <div key={tour.id} className={styles.tourBox}>
-                    <div className={styles.tourHeader}>
-                      <h3>{tour.title}</h3>
-                      <div className={styles.tourSummary}>
-                        <span>Limit: ₹{tourTotalBudget}</span>
-                        <span className={styles.spentColor}>Spent: ₹{tourTotalSpent}</span>
+                  <div 
+                    key={tour.id} 
+                    className={styles.budgetBlock} 
+                    onClick={() => {
+                      setSelectedBudgetTrip(tour);
+                      setExpenseForm({ ...expenseForm, tripId: tour.id });
+                      setShowBudgetModal(true);
+                    }}
+                  >
+                    <h3>{tour.title}</h3>
+                    <div className={styles.budgetSummaryRow}>
+                      <div className={styles.budgetStat}>
+                        <span className={styles.budgetLabel}>Budget Limit</span>
+                        <span className={styles.budgetValue}>${tour.budgetLimit}</span>
                       </div>
-                    </div>
-                    
-                    <div className={styles.destinationsList}>
-                      {tour.destinations.map(dest => {
-                        const destSpent = dest.expenses.reduce((acc, e) => acc + e.amount, 0);
-                        
-                        return (
-                          <div key={dest.id} className={styles.destinationBox}>
-                            <div className={styles.destinationHeader}>
-                              <h4>{dest.name}</h4>
-                              <div className={styles.destSummary}>
-                                <span>Limit: ₹{dest.budgetLimit}</span>
-                                <span className={styles.spentColor}>Spent: ₹{destSpent}</span>
-                              </div>
-                            </div>
-                            
-                            <div className={styles.expenseList}>
-                              {dest.expenses.map(exp => (
-                                <div key={exp.id} className={styles.expenseItem}>
-                                  <div className={styles.expenseInfo}>
-                                    <span className={styles.expenseDesc}>{exp.description}</span>
-                                    <span className={styles.expenseCat}>{exp.category}</span>
-                                  </div>
-                                  <span className={styles.expenseAmt}>₹{exp.amount}</span>
-                                </div>
-                              ))}
-                            </div>
-                            
-                            {expenseForm?.destinationId === dest.id ? (
-                              <div className={styles.addExpenseForm}>
-                                <input 
-                                  type="text" 
-                                  placeholder="Expense description" 
-                                  value={expenseForm.description}
-                                  onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
-                                  className={styles.expenseInput}
-                                />
-                                <input 
-                                  type="number" 
-                                  placeholder="Amount" 
-                                  value={expenseForm.amount}
-                                  onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
-                                  className={styles.expenseInput}
-                                />
-                                <select 
-                                  value={expenseForm.category}
-                                  onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
-                                  className={styles.expenseInput}
-                                >
-                                  <option value="Transport">Transport</option>
-                                  <option value="Activities">Activities</option>
-                                  <option value="Food">Food</option>
-                                  <option value="Stays">Stays</option>
-                                  <option value="Other">Other</option>
-                                </select>
-                                <button className={styles.saveExpenseBtn} onClick={handleAddExpenseSubmit}>Add</button>
-                                <button className={styles.cancelExpenseBtn} onClick={() => setExpenseForm(null)}>Cancel</button>
-                              </div>
-                            ) : (
-                              <button 
-                                className={styles.addExpenseBtn} 
-                                onClick={() => setExpenseForm({ tourId: tour.id, destinationId: dest.id, description: '', amount: '', category: 'Food' })}
-                              >
-                                + Add Expense
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
+                      <div className={styles.budgetStat}>
+                        <span className={styles.budgetLabel}>Total Spent</span>
+                        <span className={`${styles.budgetValue} ${tourTotalSpent > (tour.budgetLimit || 0) && (tour.budgetLimit || 0) > 0 ? styles.overBudget : ''}`}>${tourTotalSpent}</span>
+                      </div>
                     </div>
                   </div>
                 );
               })}
+              {tours.length === 0 && (
+                <div className={styles.emptyState}>
+                  <Wallet size={48} color="var(--color-gray-400)" />
+                  <h3>No trips found</h3>
+                  <p>Create a trip first to manage its budget.</p>
+                </div>
+              )}
             </div>
+
+            {/* Budget Expenses Modal */}
+            <AnimatePresence>
+              {showBudgetModal && selectedBudgetTrip && (
+                <div className={styles.modalOverlay} onClick={() => setShowBudgetModal(false)}>
+                  <motion.div 
+                    className={styles.modalContent}
+                    onClick={(e) => e.stopPropagation()}
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    style={{ maxWidth: '600px', width: '90%' }}
+                  >
+                    <div className={styles.modalHeader}>
+                      <div className={styles.modalTitle}>
+                        <Wallet size={20} color="var(--color-primary)" />
+                        <h3>{selectedBudgetTrip.title} Expenses</h3>
+                      </div>
+                      <button className={styles.closeBtn} onClick={() => setShowBudgetModal(false)}>✕</button>
+                    </div>
+
+                    <div className={styles.expensesListModal}>
+                      {!selectedBudgetTrip.expenses || selectedBudgetTrip.expenses.length === 0 ? (
+                        <p className={styles.emptyText}>No expenses added yet.</p>
+                      ) : (
+                        selectedBudgetTrip.expenses.map((exp: any) => (
+                          <div key={exp.id} className={styles.expenseItemRow}>
+                            <div className={styles.expenseInfo}>
+                              <span className={styles.expenseDesc}>{exp.description}</span>
+                              <span className={styles.expenseCat}>{exp.category}</span>
+                            </div>
+                            <span className={styles.expenseAmt}>${exp.amount}</span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <div className={styles.addExpenseSection}>
+                      <h4>Add New Expense</h4>
+                      <div className={styles.expenseFormGrid}>
+                        <input 
+                          type="text" 
+                          placeholder="Description (e.g. Dinner)" 
+                          value={expenseForm.description}
+                          onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
+                          className={styles.formInput}
+                        />
+                        <input 
+                          type="number" 
+                          placeholder="Amount" 
+                          value={expenseForm.amount || ''}
+                          onChange={(e) => setExpenseForm({...expenseForm, amount: Number(e.target.value)})}
+                          className={styles.formInput}
+                        />
+                        <select 
+                          value={expenseForm.category}
+                          onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
+                          className={styles.formInput}
+                        >
+                          <option>Food</option>
+                          <option>Transport</option>
+                          <option>Accommodation</option>
+                          <option>Activities</option>
+                          <option>Other</option>
+                        </select>
+                        <button className={styles.submitBtn} onClick={handleAddExpenseSubmit}>Add Expense</button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 

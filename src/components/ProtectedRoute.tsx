@@ -6,7 +6,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ childr
   const { session } = useAuth();
 
   if (!session) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
