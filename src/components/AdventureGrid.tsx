@@ -28,14 +28,14 @@ const adventures = [
     id: 4,
     title: 'Museum',
     icon: <Building size={20} />,
-    image: 'https://placehold.co/800x600/FDF8F0/C1502E?text=Museum',
+    image: '/assets/images/adventure-museum.jpg',
     className: styles.smallTile
   },
   {
     id: 5,
     title: 'Hot Air Balloon',
     icon: <Cloud size={20} />,
-    image: 'https://placehold.co/800x600/FDF8F0/C1502E?text=Hot+Air+Balloon',
+    image: '/assets/images/adventure-hot-air-balloon.jpg',
     className: styles.smallTile
   }
 ];
