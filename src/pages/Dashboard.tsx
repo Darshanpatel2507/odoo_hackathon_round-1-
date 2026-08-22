@@ -1,9 +1,16 @@
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    navigate('/');
+    await signOut();
+  };
 
   return (
     <div className={styles.container}>
@@ -11,7 +18,7 @@ export default function Dashboard() {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1 className={`${styles.title} script-font`}>Dashboard</h1>
-          <button onClick={signOut} className={styles.logoutBtn}>Log Out</button>
+          <button onClick={handleLogout} className={styles.logoutBtn}>Log Out</button>
         </div>
         
         <div className={styles.content}>
